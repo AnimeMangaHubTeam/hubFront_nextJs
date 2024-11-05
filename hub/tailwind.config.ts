@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		screens: {
+			'3xl': '1600px',
+			'4xl': '1920px'
+		  },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -55,7 +59,19 @@ const config: Config = {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		  container: {
+			padding: {
+			  DEFAULT: '1rem',
+			  sm: '2rem',
+			  lg: '4rem',
+			  xl: '5rem',
+			  '2xl': '6rem',
+			  '3xl': '8rem',
+			  '4xl': '10rem',
+			},
+		  },
+		
   	}
   },
   plugins: [require("tailwindcss-animate")],

@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Toaster } from "@/components/ui/sonner"  // Changed to use sonner
 import { toast } from "sonner"  // Changed to use sonner's toast
+import { use } from 'react'
+import { usePathname } from 'next/navigation'
 
 // Mock data - replace with actual data fetching in a real application
 const mangaInfo = {
@@ -20,7 +22,17 @@ const mangaInfo = {
 
 const chapters = Array.from({ length: mangaInfo.totalChapters }, (_, i) => i + 1)
 
-export default function MangaReader() {
+interface Params {
+  slug: string;
+}
+
+export default function MangaReader({ params }: { params: Promise<Params> }) {
+  const { slug } = use(params)
+
+  console.log(slug)
+  const path = usePathname();
+  console.log(path)
+
   const [currentPage, setCurrentPage] = useState(1)
   const [currentChapter, setCurrentChapter] = useState(mangaInfo.currentChapter)
   const touchStartX = useRef(0)
