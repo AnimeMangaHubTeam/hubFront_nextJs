@@ -5,15 +5,19 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function Header({ isAdmin = false, isLoggedIn = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-
+  const pathName = usePathname();
 
   return (
     <header
-      className={`bg-black bg-opacity-75 text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0"`}
+      className={`bg-black bg-opacity-75 text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
+        ${pathName === "/signIn" || pathName === "/signUp" ? "hidden" : ""}
+        
+        `}
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -36,6 +40,7 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
             <Link href="/collections" className="hover:text-gray-300">
               Collections
             </Link>
+            <button onClick={() => console.log(pathName)}> test</button>
           </nav>
 
           {/* Search Bar */}
@@ -55,8 +60,12 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
           <div className="hidden md:flex space-x-2">
             {!isLoggedIn && (
               <>
-                <Button variant="ghost">Log In</Button>
-                <Button>Get Started</Button>
+                <Button  variant="ghost" className="w-full">
+                  <Link href={"/signIn"}>Log In</Link>
+                </Button>
+                <Button className="w-full">
+                  <Link href={"/signUp"}>Get Started</Link>
+                </Button>
               </>
             )}
             {isAdmin && (
@@ -108,10 +117,12 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
             </div>
             {!isLoggedIn && (
               <div className="flex space-x-2 mt-2">
-                <Button variant="ghost" className="w-full">
-                  Log In
+                <Button  variant="ghost" className="w-full">
+                  <Link href={"/signIn"}>Log In</Link>
                 </Button>
-                <Button className="w-full">Get Started</Button>
+                <Button className="w-full">
+                  <Link href={"/signUp"}>Get Started</Link>
+                </Button>
               </div>
             )}
             {isAdmin && (
