@@ -50,7 +50,7 @@ export default function MangaPreviewSlider({data, title}: MangaPreviewSliderProp
   const mangaList = Array(10).fill(null)
 
   return (
-    <div className="relative  mx-auto px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="relative  mx-auto px-5 sm:px-6 lg:px-8 overflow-hidden">
         <h2 className="text-3xl font-bold my-4 text-white">
         {title}
       </h2>
@@ -63,6 +63,7 @@ export default function MangaPreviewSlider({data, title}: MangaPreviewSliderProp
                 title={data[0].title}
                 author={data[0].author}
                 genres={data[0].genres}
+                rating={4.5}
                 description={data[0].description}
               />
             </div>

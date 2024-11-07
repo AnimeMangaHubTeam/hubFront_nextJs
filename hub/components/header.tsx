@@ -15,7 +15,7 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
   return (
     <header
       className={`bg-black bg-opacity-75 text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
-        ${pathName === "/signIn" || pathName === "/signUp" ? "hidden" : ""}
+        ${pathName === "/auth" ? "hidden" : ""}
         
         `}
     >
@@ -60,11 +60,25 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
           <div className="hidden md:flex space-x-2">
             {!isLoggedIn && (
               <>
-                <Button  variant="ghost" className="w-full">
-                  <Link href={"/signIn"}>Log In</Link>
+                <Button variant="ghost" className="w-full">
+                  <Link
+                    href={{
+                      pathname: "/auth",
+                      query: { page: "signIn" },
+                    }}
+                  >
+                    Log In
+                  </Link>
                 </Button>
                 <Button className="w-full">
-                  <Link href={"/signUp"}>Get Started</Link>
+                  <Link
+                    href={{
+                      pathname: "/auth",
+                      query: { page: "signUp" },
+                    }}
+                  >
+                    Get Started
+                  </Link>
                 </Button>
               </>
             )}
@@ -117,11 +131,25 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
             </div>
             {!isLoggedIn && (
               <div className="flex space-x-2 mt-2">
-                <Button  variant="ghost" className="w-full">
-                  <Link href={"/signIn"}>Log In</Link>
+                <Button variant="ghost" className="w-full">
+                  <Link
+                    href={{
+                      pathname: "/auth",
+                      query: { page: "signIn" },
+                    }}
+                  >
+                    Log In
+                  </Link>
                 </Button>
                 <Button className="w-full">
-                  <Link href={"/signUp"}>Get Started</Link>
+                  <Link
+                    href={{
+                      pathname: "/auth",
+                      query: { page: "signUp" },
+                    }}
+                  >
+                    Get Started
+                  </Link>
                 </Button>
               </div>
             )}

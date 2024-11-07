@@ -1,73 +1,76 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardFooter } from "@/components/ui/card";
+import { useState } from "react"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
+import { ChevronRight, Star } from "lucide-react"
+import Link from "next/link"
 
 interface MangaPreviewProps {
-  src: string;
-  title: string;
-  author: string;
-  genres: string[];
-  description: string;
+  src: string
+  title: string
+  author: string
+  genres: string[]
+  description: string
+  rating: number
 }
 
-export default function Component({ src, title, author, genres, description }: MangaPreviewProps) {
-  const [isHovered, setIsHovered] = useState(false);
+export default function Component({ 
+  src = "/placeholder.svg?height=400&width=300", 
+  title = "Manga Title", 
+  author = "Author Name", 
+  genres = ["Action", "Adventure"], 
+  description = "text", 
+  rating = 4.5 
+}: MangaPreviewProps) {
+  const [isHovered, setIsHovered] = useState(false)
 
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
-  const handleFocus = () => setIsHovered(true);
-  const handleBlur = () => setIsHovered(false);
+  const handleMouseEnter = () => setIsHovered(true)
+  const handleMouseLeave = () => setIsHovered(false)
 
   return (
     <Card
-      className="mx-auto overflow-hidden relative manga-preview-scrollbar shadow-md border-0"
-      style={{
-        width: "100%",
-        maxWidth: "300px",
-      }}
+      className="group relative w-full max-w-[300px] overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      tabIndex={0}
     >
-      <div className="relative w-full" style={{ paddingBottom: "133.33%" }}>
+      <div className="relative aspect-[3/4] w-full overflow-hidden">
         <Image
           src={src}
-          alt={"Cover of manga"}
+          alt={`Cover of ${title}`}
           fill
-          style={{ objectFit: "cover" }}
+          className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 300px"
         />
-        <div
-          className={`absolute inset-0 bg-black bg-opacity-75 p-4 transition-opacity duration-300 ease-in-out flex flex-col justify-between ${
-            isHovered ? "opacity-100" : "opacity-0"
-          }`}
-          aria-hidden={!isHovered}
-        >
-          <div className="overflow-y-auto text-white max-h-full">
-            <p className="text-sm mb-2">by {author}</p>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {genres.map((genre) => (
-                <Badge key={genre} variant="secondary" className="bg-white/20 text-white">
-                  {genre}
-                </Badge>
-              ))}
-            </div>
-            <p className="text-sm">
-              {description}
-            </p>
-          </div>
-          <Button className="w-full mt-4" variant="destructive">Read</Button>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-      <CardFooter className={`pt-1 pb-1 transition-opacity duration-300 ease-in-out ${isHovered ? 'bg-black bg-opacity-75' : null}`}>
-        <h2 className={`text-lg font-bold mb-1 w-full text-center ${isHovered ? 'text-slate-100': null}`}>{title}</h2>
+      <CardContent className="absolute inset-0 flex flex-col justify-end p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <h2 className="mb-1 text-2xl font-bold leading-tight">{title}</h2>
+        <p className="mb-2 text-sm font-medium">by {author}</p>
+        <div className="mb-2 flex items-center">
+          <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
+          <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+        </div>
+        <div className="mb-2 flex flex-wrap gap-2">
+          {genres.map((genre) => (
+            <Badge key={genre} variant="secondary" className="bg-white/20 text-xs font-medium text-white">
+              {genre}
+            </Badge>
+          ))}
+        </div>
+        <p className="mb-4 text-sm line-clamp-3">{description}</p>
+        <Button className="w-full z-30" variant="secondary">
+          <Link href={`/manga/${title}`}>
+          Read Now
+          </Link>
+          <ChevronRight className="ml-2 h-4 w-4" />
+        </Button>
+      </CardContent>
+      <CardFooter className="bg-white p-4" >
+        <h2 className={`w-full truncate text-center text-lg font-bold ${isHovered ? "opacity-0" : undefined}`}>{title}</h2>
       </CardFooter>
     </Card>
-  );
+  )
 }

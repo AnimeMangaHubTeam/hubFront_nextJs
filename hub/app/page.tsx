@@ -3,6 +3,7 @@ import Header from "@/components/header";
 import Banner from "@/components/banner";
 import MangaPreview from "@/components/mangaPreview";
 import MangaSlider from "@/components/mangaSlider";
+import TestComponent from "@/components/testComponent";
 
 
 const data = [ 
@@ -25,6 +26,18 @@ export default function Home() {
         data={data}
         title="Special"/>
       </div>
+
+
+
+    <TestComponent />
+
+
+
+
+
+
+
+
       <div className="container mx-auto px-4">
       <MangaSlider 
         data={data}
@@ -36,6 +49,12 @@ export default function Home() {
         data={data}
         title="Special"/>
       </div>
+
+
+
+
+
+
       <div>
       </div>
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, quos
