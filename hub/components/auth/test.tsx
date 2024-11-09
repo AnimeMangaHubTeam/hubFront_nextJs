@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useActionState } from 'react'
 import { Eye, EyeOff, Lock, Mail, User, Calendar } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -9,53 +9,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import Link from 'next/link'
+import { signUp, SignUpState } from './signUpActions'
 
+const initialState: SignUpState = {
+  errors: {},
+  message: null,
+  user: null
+}
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [password, setPassword] = useState('String1!')
   const [repeatPassword, setRepeatPassword] = useState('String1!')
-
-/*"email": "string",
-  "userName": "string",
-  "password": "string",
-  "repeatPassword": "string"
-  */
-
-
-    const handleSubmitButton = () => {
-      async function postDataFunc() {
-        try {
-          const response = await fetch(
-            "https://localhost:7159/api/app/auth/sign-up",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: emailRef.current?.value,
-                userName: userNameRef.current?.value,
-                password: passwordRef.current?.value,
-                repeatPassword: repeatPasswordRef.current?.value,
-              }),
-            }
-          );
-          const data = await response.json();
-          console.log(data);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      postDataFunc();
-    }
-  
-
-
-
-
-    const emailRef = useRef<HTMLInputElement>(null)
-    const userNameRef = useRef<HTMLInputElement>(null)
-    const passwordRef = useRef<HTMLInputElement>(null)
-    const repeatPasswordRef = useRef<HTMLInputElement>(null)
+  const [state, dispatch] = useActionState(signUp, initialState)
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
@@ -83,9 +49,10 @@ export default function SignUpForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Sig1n up</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Sign up</CardTitle>
           <CardDescription className="text-center">Create an account to get started</CardDescription>
         </CardHeader>
+        <form action={dispatch}>
           <CardContent className="space-y-4">
             {/* <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -103,8 +70,9 @@ export default function SignUpForm() {
               <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="email" name="email" placeholder="m@example.com" type="email" className="pl-10" ref={emailRef}/>
+                <Input id="email" name="email" placeholder="m@example.com" type="email" className="pl-10" />
               </div>
+              {state.errors?.email && <p className="text-xs text-red-500">{state.errors.email[0]}</p>}
             </div>
             {/*<div className="space-y-2">
               <Label htmlFor="dateOfBirth">Date of Birth</Label>
@@ -118,8 +86,9 @@ export default function SignUpForm() {
               <Label htmlFor="userName">Username</Label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="userName" name="userName" placeholder="johndoe" className="pl-10" defaultValue={"test"} ref={userNameRef}/>
+                <Input id="userName" name="userName" placeholder="johndoe" className="pl-10" defaultValue={"test"}/>
               </div>
+              {state.errors?.userName && <p className="text-xs text-red-500">{state.errors.userName[0]}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -132,7 +101,6 @@ export default function SignUpForm() {
                   className="pl-10 pr-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  ref={passwordRef}
                 />
                 <button
                   type="button"
@@ -144,6 +112,7 @@ export default function SignUpForm() {
               </div>
               <Progress value={passwordStrength} className={`h-2 ${getPasswordStrengthColor()}`} />
               <p className="text-xs text-muted-foreground">Password strength: {passwordStrength}%</p>
+              {state.errors?.password && <p className="text-xs text-red-500">{state.errors.password[0]}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="repeatPassword">Repeat Password</Label>
@@ -156,7 +125,6 @@ export default function SignUpForm() {
                   className="pl-10 pr-10"
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
-                  ref={repeatPasswordRef}
                 />
               </div>
               {repeatPassword && (
@@ -164,11 +132,19 @@ export default function SignUpForm() {
                   {password === repeatPassword ? "Passwords match" : "Passwords do not match"}
                 </p>
               )}
+              {state.errors?.repeatPassword && <p className="text-xs text-red-500">{state.errors.repeatPassword[0]}</p>}
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button className="w-full" onClick={handleSubmitButton}>Sign up</Button>
-
+            <Button className="w-full" type="submit">Sign up</Button>
+            {state.message && (
+              <div className={`text-sm ${state.user ? 'text-green-500' : 'text-red-500'}`}>
+                <p>{state.message}</p>
+                {state.user && (
+                  <p>Welcome, {state.user.firstName}! Your account has been created.</p>
+                )}
+              </div>
+            )}
             <div className="text-sm text-center text-muted-foreground">
               Already have an account?{" "}
               <Link href="/auth?page=signIn" className="text-primary hover:underline">
@@ -182,6 +158,7 @@ export default function SignUpForm() {
               Return to the main page?
             </Link>
           </CardFooter>
+        </form>
       </Card>
     </div>
   )
