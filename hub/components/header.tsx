@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-export default function Header({ isAdmin = false, isLoggedIn = false }) {
+export default function Header({ isAdmin = false, isTranslator = false, isLoggedIn = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const pathName = usePathname();
@@ -25,7 +25,6 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
           <Link href="/" className="text-2xl font-bold italic tracking-wider">
             Tomodachi
           </Link>
-
           {/* Navigation for larger screens */}
           <nav className="hidden md:flex space-x-4">
             <Link href="/" className="hover:text-gray-300">
@@ -42,7 +41,6 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
             </Link>
             <button onClick={() => console.log(pathName)}> test</button>
           </nav>
-
           {/* Search Bar */}
           <div className="hidden md:flex items-center flex-1 max-w-sm mx-4">
             <Input
@@ -55,7 +53,6 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
               <span className="sr-only">Search</span>
             </Button>
           </div>
-
           {/* Auth Buttons for larger screens */}
           <div className="hidden md:flex space-x-2">
             {!isLoggedIn && (
@@ -82,13 +79,14 @@ export default function Header({ isAdmin = false, isLoggedIn = false }) {
                 </Button>
               </>
             )}
+
             {isAdmin && (
               <Button variant="outline" size="sm" className="ml-2">
                 Admin
               </Button>
             )}
           </div>
-
+            
           {/* Mobile menu button */}
           <Button
             variant="ghost"

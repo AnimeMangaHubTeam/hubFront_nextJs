@@ -1,9 +1,6 @@
-import { Button } from "@/components/ui/button";
-import Header from "@/components/header";
 import Banner from "@/components/banner";
 import MangaPreview from "@/components/mangaPreview";
 import MangaSlider from "@/components/mangaSlider";
-import TestComponent from "@/components/testComponent";
 
 
 const data = [ 
@@ -29,7 +26,6 @@ export default function Home() {
 
 
 
-    <TestComponent />
 
 
 

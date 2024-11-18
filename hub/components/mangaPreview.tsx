@@ -62,7 +62,7 @@ export default function Component({
         </div>
         <p className="mb-4 text-sm line-clamp-3">{description}</p>
         <Button className="w-full z-30" variant="secondary">
-          <Link href={`/manga/${title}`}>
+          <Link href={`/mangaDescriptionPage/${title}`}>
           Read Now
           </Link>
           <ChevronRight className="ml-2 h-4 w-4" />

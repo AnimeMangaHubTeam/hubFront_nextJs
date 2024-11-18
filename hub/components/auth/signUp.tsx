@@ -1,65 +1,63 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { useActionState } from 'react'
-import { Eye, EyeOff, Lock, Mail, User, Calendar } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Progress } from '@/components/ui/progress'
 import Link from 'next/link'
+import { BASE_URL } from '@/lib/baseUrl'
 
+
+
+
+
+
+
+const signUpSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  username: z.string().min(3, { message: 'Username must be at least 3 characters long' }),
+  password: z.string().min(8, { message: 'Password must be at least 8 characters long' }),
+  repeatPassword: z.string(),
+}).refine((data) => data.password === data.repeatPassword, {
+  message: "Passwords don't match",
+  path: ['repeatPassword'],
+})
+
+type SignUpFormValues = z.infer<typeof signUpSchema>
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false)
-  const [password, setPassword] = useState('String1!')
-  const [repeatPassword, setRepeatPassword] = useState('String1!')
+  const [passwordStrength, setPasswordStrength] = useState(0)
 
-/*"email": "string",
-  "userName": "string",
-  "password": "string",
-  "repeatPassword": "string"
-  */
-
-
-    const handleSubmitButton = () => {
-      async function postDataFunc() {
-        try {
-          const response = await fetch(
-            "https://localhost:7159/api/app/auth/sign-up",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: emailRef.current?.value,
-                userName: userNameRef.current?.value,
-                password: passwordRef.current?.value,
-                repeatPassword: repeatPasswordRef.current?.value,
-              }),
-            }
-          );
-          const data = await response.json();
-          console.log(data);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      postDataFunc();
-    }
-  
-
-
-
-
-    const emailRef = useRef<HTMLInputElement>(null)
-    const userNameRef = useRef<HTMLInputElement>(null)
-    const passwordRef = useRef<HTMLInputElement>(null)
-    const repeatPasswordRef = useRef<HTMLInputElement>(null)
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: '',
+      username: '',
+      password: '',
+      repeatPassword: '',
+    },
+  })
 
   const calculatePasswordStrength = (password: string) => {
     let strength = 0
@@ -71,117 +69,163 @@ export default function SignUpForm() {
     return strength
   }
 
-  const passwordStrength = calculatePasswordStrength(password)
-
   const getPasswordStrengthColor = () => {
-    if (passwordStrength < 40) return 'bg-red-500'
-    if (passwordStrength < 80) return 'bg-yellow-500'
-    return 'bg-green-500'
+    if (passwordStrength < 40) return 'bg-destructive'
+    if (passwordStrength < 80) return 'bg-warning'
+    return 'bg-success'
+  }
+
+  const onSubmit = async (data: SignUpFormValues) => {
+    try {
+      const response = await fetch(`${BASE_URL}api/app/auth/sign-up`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!response.ok) {
+        throw new Error('Sign up failed')
+      }
+      const responseData = await response.json()
+      console.log(responseData)
+      // Handle successful sign up (e.g., redirect to login page or show success message)
+    } catch (error) {
+      console.error('Sign up error:', error)
+      form.setError('root', { 
+        type: 'manual',
+        message: 'Sign up failed. Please try again.'
+      })
+    }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Sig1n up</CardTitle>
-          <CardDescription className="text-center">Create an account to get started</CardDescription>
+          <CardTitle className="text-2xl font-bold text-center">Sign up</CardTitle>
+          <CardDescription className="text-center">
+            Create an account to get started
+          </CardDescription>
         </CardHeader>
-          <CardContent className="space-y-4">
-            {/* <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" name="firstName" placeholder="John" defaultValue={"test"}/>
-                {state.errors?.firstName && <p className="text-xs text-red-500">{state.errors.firstName[0]}</p>}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            {form.formState.errors.root && (
+              <div className="text-destructive text-center text-sm mb-4">
+                {form.formState.errors.root.message}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input id="lastName" name="lastName" placeholder="Doe" defaultValue={"test"}/>
-                {state.errors?.lastName && <p className="text-xs text-red-500">{state.errors.lastName[0]}</p>}
+            )}
+            <CardContent className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="m@example.com" type="email" className={`pl-10 ${form.formState.errors.email ? 'border-destructive' : ''}`} {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="johndoe" className={`pl-10 ${form.formState.errors.username ? 'border-destructive' : ''}`} {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          className={`pl-10 pr-10 ${form.formState.errors.password ? 'border-destructive' : ''}`}
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setPasswordStrength(calculatePasswordStrength(e.target.value))
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-3 text-muted-foreground hover:text-primary"
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <Progress
+                      value={passwordStrength}
+                      className={`h-2 ${getPasswordStrengthColor()}`}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Password strength: {passwordStrength}%
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="repeatPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Repeat Password</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          className={`pl-10 pr-10 ${form.formState.errors.repeatPassword ? 'border-destructive' : ''}`}
+                          {...field}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-4">
+              <Button type="submit" className="w-full">
+                Sign up
+              </Button>
+              <div className="text-sm text-center text-muted-foreground">
+                Already have an account?{' '}
+                <Link href="/auth?page=signIn" className="text-primary hover:underline">
+                  Sign in
+                </Link>
               </div>
-            </div> */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="email" name="email" placeholder="m@example.com" type="email" className="pl-10" ref={emailRef}/>
-              </div>
-            </div>
-            {/*<div className="space-y-2">
-              <Label htmlFor="dateOfBirth">Date of Birth</Label>
-              <div className="relative">
-                <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="dateOfBirth" name="dateOfBirth" type="date" className="pl-10" />
-              </div>
-              {state.errors?.dateOfBirth && <p className="text-xs text-red-500">{state.errors.dateOfBirth[0]}</p>}
-            </div>*/}
-            <div className="space-y-2">
-              <Label htmlFor="userName">Username</Label>
-              <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input id="userName" name="userName" placeholder="johndoe" className="pl-10" defaultValue={"test"} ref={userNameRef}/>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  className="pl-10 pr-10"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  ref={passwordRef}
-                />
-                <button
-                  type="button"
-                  onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-3 text-muted-foreground hover:text-primary"
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              <Progress value={passwordStrength} className={`h-2 ${getPasswordStrengthColor()}`} />
-              <p className="text-xs text-muted-foreground">Password strength: {passwordStrength}%</p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="repeatPassword">Repeat Password</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="repeatPassword"
-                  name="repeatPassword"
-                  type={showPassword ? "text" : "password"}
-                  className="pl-10 pr-10"
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                  ref={repeatPasswordRef}
-                />
-              </div>
-              {repeatPassword && (
-                <p className={`text-xs ${password === repeatPassword ? "text-green-500" : "text-red-500"}`}>
-                  {password === repeatPassword ? "Passwords match" : "Passwords do not match"}
-                </p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button className="w-full" onClick={handleSubmitButton}>Sign up</Button>
-
-            <div className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
-              <Link href="/auth?page=signIn" className="text-primary hover:underline">
-                Sign in
+              <Link href="/" className="text-primary hover:underline">
+                Return to the main page
               </Link>
-            </div>
-            <Link
-              href="/"
-              className="text-primary hover:underline"
-            >
-              Return to the main page?
-            </Link>
-          </CardFooter>
+            </CardFooter>
+          </form>
+        </Form>
       </Card>
     </div>
   )
