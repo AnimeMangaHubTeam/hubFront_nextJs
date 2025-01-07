@@ -7,75 +7,14 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { BookOpen, MessageSquare, ThumbsUp, ThumbsDown, Star, Calendar, BookMarked, ChevronRight, CornerDownRight, X } from 'lucide-react'
-
-type Comment = {
-  id: number;
-  user: string;
-  content: string;
-  likes: number;
-  dislikes: number;
-  avatar: string;
-  replies: Comment[];
-}
+import { BookOpen, Star, Calendar, BookMarked, ChevronRight, CornerDownRight} from 'lucide-react'
 
 export default function MangaPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [selectedChapter, setSelectedChapter] = useState(1)
   const [userRating, setUserRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
-  const [replyingTo, setReplyingTo] = useState<number | null>(null)
-  const [replyContent, setReplyContent] = useState('')
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      user: "SpaceExplorer",
-      content: "This manga is out of this world! Can't wait for the next chapter!",
-      likes: 15,
-      dislikes: 2,
-      avatar: "/placeholder.svg?height=40&width=40",
-      replies: [
-        {
-          id: 3,
-          user: "StarGazer",
-          content: "I know right? The cliffhanger at the end of the last chapter was intense!",
-          likes: 8,
-          dislikes: 1,
-          avatar: "/placeholder.svg?height=40&width=40",
-          replies: [
-            {
-              id: 4,
-              user: "CosmicReader",
-              content: "That plot twist caught me completely off guard. The author is a genius!",
-              likes: 5,
-              dislikes: 0,
-              avatar: "/placeholder.svg?height=40&width=40",
-              replies: [],
-            }
-          ]
-        }
-      ]
-    },
-    {
-      id: 2,
-      user: "GalacticReader",
-      content: "The artwork is stunning, especially the alien landscapes.",
-      likes: 12,
-      dislikes: 3,
-      avatar: "/placeholder.svg?height=40&width=40",
-      replies: [
-        {
-          id: 5,
-          user: "ArtEnthusiast",
-          content: "Agreed! The attention to detail in each panel is remarkable.",
-          likes: 6,
-          dislikes: 1,
-          avatar: "/placeholder.svg?height=40&width=40",
-          replies: [],
-        }
-      ]
-    },
-  ])
+ 
   const [mangaData, setMangaData] = useState({
     title: "Cosmic Odyssey",
     cover: "/placeholder.svg?height=400&width=300",
@@ -105,111 +44,8 @@ export default function MangaPage() {
     }
   }
 
-  const handleReply = (commentId: number) => {
-    if (isLoggedIn) {
-      setReplyingTo(commentId)
-      setReplyContent('')
-    } else {
-      alert("Please log in to reply to comments.")
-    }
-  }
-
-  const submitReply = (parentId: number) => {
-    if (replyContent.trim() === '') return
-
-    const newReply: Comment = {
-      id: Date.now(),
-      user: "CurrentUser",
-      content: replyContent,
-      likes: 0,
-      dislikes: 0,
-      avatar: "/placeholder.svg?height=40&width=40",
-      replies: [],
-    }
-
-    const addReplyToComment = (comments: Comment[]): Comment[] => {
-      return comments.map(comment => {
-        if (comment.id === parentId) {
-          return { ...comment, replies: [...comment.replies, newReply] }
-        } else if (comment.replies.length > 0) {
-          return { ...comment, replies: addReplyToComment(comment.replies) }
-        }
-        return comment
-      })
-    }
-
-    setComments(addReplyToComment(comments))
-    setReplyingTo(null)
-    setReplyContent('')
-  }
-
-  const CommentComponent = ({ comment, depth = 0 }: { comment: Comment, depth?: number }) => (
-    <div className={`mt-4 ${depth > 0 ? 'ml-6' : ''}`}>
-      <div className="flex items-start space-x-4">
-        <Image
-          src={comment.avatar}
-          alt={comment.user}
-          width={32}
-          height={32}
-          className="rounded-full"
-        />
-        <div className="flex-1">
-          <p className="font-semibold text-blue-400">{comment.user}</p>
-          <p className="mt-1 text-gray-300">{comment.content}</p>
-          <div className="flex items-center mt-2 space-x-4 text-sm">
-            <button className="flex items-center text-gray-400 hover:text-blue-400">
-              <ThumbsUp className="h-4 w-4 mr-1" />
-              <span>{comment.likes}</span>
-            </button>
-            <button className="flex items-center text-gray-400 hover:text-red-400">
-              <ThumbsDown className="h-4 w-4 mr-1" />
-              <span>{comment.dislikes}</span>
-            </button>
-            <button 
-              className="flex items-center text-gray-400 hover:text-gray-300"
-              onClick={() => handleReply(comment.id)}
-            >
-              <CornerDownRight className="h-4 w-4 mr-1" />
-              <span>Reply</span>
-            </button>
-          </div>
-        </div>
-      </div>
-      {replyingTo === comment.id && (
-        <div className="mt-4 ml-10">
-          <Textarea
-            value={replyContent}
-            onChange={(e) => setReplyContent(e.target.value)}
-            placeholder="Write your reply..."
-            className="bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
-          />
-          <div className="mt-2 flex justify-end space-x-2">
-            <Button 
-              onClick={() => setReplyingTo(null)}
-              variant="outline"
-              size="sm"
-              className="text-gray-400 hover:text-gray-300"
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => submitReply(comment.id)}
-              size="sm"
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Submit Reply
-            </Button>
-          </div>
-        </div>
-      )}
-      {comment.replies.map(reply => (
-        <CommentComponent key={reply.id} comment={reply} depth={depth + 1} />
-      ))}
-    </div>
-  )
-
   return (
-    <div className="min-h-screen bg-black text-gray-100 p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-stone-950 text-gray-100 p-4 sm:p-6 md:p-8">
       <div className="max-w-6xl mx-auto mt-24">
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="md:w-1/3">
@@ -350,18 +186,8 @@ export default function MangaPage() {
           </TabsContent>
           <TabsContent value="comments">
             <div className="space-y-6 mt-6">
-              {comments.map((comment) => (
-                <CommentComponent key={comment.id} comment={comment} />
-              ))}
-              <div className="mt-6">
-                <Textarea
-                  placeholder="Add a comment..."
-                  className="bg-gray-800 text-gray-100 border-gray-800 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
-                />
-                <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-lg py-4 px-6 shadow-lg transition-transform hover:scale-105">
-                  <MessageSquare className="mr-2 h-5 w-5" /> Post Comment
-                </Button>
-              </div>
+             fuck that shit
+             <br/>//fix later
             </div>
           </TabsContent>
         </Tabs>

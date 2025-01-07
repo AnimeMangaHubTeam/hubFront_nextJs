@@ -19,11 +19,11 @@ export default function Component() {
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black to-transparent"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-stone-950"></div>
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-xl">
+        <div className="max-w-xl sm:ml-24">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">Anime Title</h1>
           <p className="text-lg sm:text-xl text-gray-200 mb-6">
             A brief description of the anime or manga series. Exciting adventures await!

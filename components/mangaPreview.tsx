@@ -41,12 +41,12 @@ export default function Component({
           src={src}
           alt={`Cover of ${title}`}
           fill
-          className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
+          className="object-cover transition-all duration-300 ease-in-out group-hover:scale-110"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 300px"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
-      <CardContent className="absolute inset-0 flex flex-col justify-end p-4 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <CardContent className="absolute inset-0 flex flex-col justify-end p-0 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:bg-black/70">
+        <div className="p-4">
         <h2 className="mb-1 text-2xl font-bold leading-tight">{title}</h2>
         <p className="mb-2 text-sm font-medium">by {author}</p>
         <div className="mb-2 flex items-center">
@@ -61,14 +61,15 @@ export default function Component({
           ))}
         </div>
         <p className="mb-4 text-sm line-clamp-3">{description}</p>
-        <Button className="w-full z-30" variant="secondary">
+        </div>
+        <Button className="w-full z-30 h-14 rounded-t-none" variant="destructive">
           <Link href={`/mangaDescriptionPage/${title}`}>
           Read Now
           </Link>
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardContent>
-      <CardFooter className="bg-white p-4" >
+      <CardFooter className="bg-white py-3 group-hover:bg-stone-900" >
         <h2 className={`w-full truncate text-center text-lg font-bold ${isHovered ? "opacity-0" : undefined}`}>{title}</h2>
       </CardFooter>
     </Card>

@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <div>
       <Banner />
-      <div className="container  mx-auto relative z-10 px-4 flex gap-2 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
+      <div className="sm:container  mx-auto relative z-10 flex gap-2 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
         <MangaSlider 
         data={data}
         title="Special"/>
@@ -34,7 +34,7 @@ export default function Home() {
 
 
 
-      <div className="container mx-auto px-4">
+      <div className="sm:container mx-auto ">
       <MangaSlider 
         data={data}
         title="Special"/>

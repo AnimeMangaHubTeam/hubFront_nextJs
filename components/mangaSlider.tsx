@@ -46,14 +46,31 @@ export default function MangaPreviewSlider({data, title}: MangaPreviewSliderProp
     emblaApi.on('select', onSelect)
   }, [emblaApi, onSelect])
 
-  // Create an array of 10 items for demonstration
   const mangaList = Array(10).fill(null)
 
   return (
     <div className="relative  mx-auto px-5 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold my-4 text-white">
         {title}
       </h2>
+      <div className='flex items-center justify-center space-x-4 '>
+      <Button
+        className="hidden sm:block bg-white/30 hover:bg-white text-black rounded-full p-1 shadow-md z-20"
+        onClick={scrollPrev}
+        disabled={!prevBtnEnabled}
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+      <Button
+        className="hidden sm:block bg-white/30 hover:bg-white text-black rounded-full p-1 shadow-md z-20"
+        onClick={scrollNext}
+        disabled={!nextBtnEnabled}
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
+      </div>
+      </div>
       <div className="overflow-hidden pb-4" ref={emblaRef}>
         <div className="flex -ml-4">
           {mangaList.map((_, index) => (
@@ -70,22 +87,7 @@ export default function MangaPreviewSlider({data, title}: MangaPreviewSliderProp
           ))}
         </div>
       </div>
-      {//<div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/70 to-transparent pointer-events-none z-10" />
-      }
-      <Button
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white text-black rounded-full p-1 py-10 shadow-md z-20"
-        onClick={scrollPrev}
-        disabled={!prevBtnEnabled}
-      >
-        <ChevronLeft className="h-6 w-6" />
-      </Button>
-      <Button
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white text-black rounded-full p-1 py-10 shadow-md z-20"
-        onClick={scrollNext}
-        disabled={!nextBtnEnabled}
-      >
-        <ChevronRight className="h-6 w-6" />
-      </Button>
+
     </div>
   )
 }

@@ -14,7 +14,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
 
   return (
     <header
-      className={`bg-black bg-opacity-75 text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
+      className={`bg-black ${isMenuOpen ? "bg-opacity-100" : "bg-opacity-75"}  text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
         ${pathName === "/auth" ? "hidden" : ""}
         
         `}
@@ -22,7 +22,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Site Name */}
-          <Link href="/" className="text-2xl font-bold italic tracking-wider">
+          <Link href="/" className="text-2xl font-bold italic tracking-wider text-red-600">
             Tomodachi
           </Link>
           {/* Navigation for larger screens */}
@@ -74,7 +74,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
                       query: { page: "signUp" },
                     }}
                   >
-                    Get Started
+                    Sign Up
                   </Link>
                 </Button>
               </>
@@ -101,7 +101,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-2">
+          <div className="md:hidden py-2 transition-all ease-in-out duration-300">
             <nav className="flex flex-col space-y-2">
               <Link href="/" className="hover:text-gray-300">
                 Home
@@ -129,7 +129,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
             </div>
             {!isLoggedIn && (
               <div className="flex space-x-2 mt-2">
-                <Button variant="ghost" className="w-full">
+                <Button variant="destructive" className="w-full">
                   <Link
                     href={{
                       pathname: "/auth",
@@ -146,7 +146,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
                       query: { page: "signUp" },
                     }}
                   >
-                    Get Started
+                    Sign Up
                   </Link>
                 </Button>
               </div>
