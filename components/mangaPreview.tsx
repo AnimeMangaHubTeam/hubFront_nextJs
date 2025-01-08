@@ -32,7 +32,7 @@ export default function Component({
 
   return (
     <Card
-      className="group relative w-full max-w-[300px] overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl"
+      className="group relative w-full max-w-[300px] overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl rounded-sm border-stone-700"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -62,14 +62,14 @@ export default function Component({
         </div>
         <p className="mb-4 text-sm line-clamp-3">{description}</p>
         </div>
-        <Button className="w-full z-30 h-14 rounded-t-none" variant="destructive">
+        <Button className="w-full z-30 h-14 rounded-sm rounded-t-none" variant="destructive">
           <Link href={`/mangaDescriptionPage/${title}`}>
           Read Now
           </Link>
           <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
       </CardContent>
-      <CardFooter className="bg-white py-3 group-hover:bg-stone-900" >
+      <CardFooter className="bg-stone-200 py-3 group-hover:bg-stone-900" >
         <h2 className={`w-full truncate text-center text-lg font-bold ${isHovered ? "opacity-0" : undefined}`}>{title}</h2>
       </CardFooter>
     </Card>
