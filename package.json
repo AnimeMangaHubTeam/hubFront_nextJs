@@ -21,6 +21,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.3.1",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.454.0",
     "next": "15.0.2",
     "next-auth": "^4.24.10",
@@ -35,6 +37,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

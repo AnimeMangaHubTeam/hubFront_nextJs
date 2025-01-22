@@ -58,16 +58,9 @@ export default function SignInForm() {
         throw new Error("Sign in failed");
       }
       const responseData = await response.json();
-      console.log(responseData);
+      console.log("Response Data:", responseData);
 
-
-      // Store token in local storage
-      localStorage.setItem("user", responseData.value.user.userName);
-      localStorage.setItem("roles", responseData.value.user.roles);
-      localStorage.setItem("accessToken", responseData.value.token.accessToken);
-      localStorage.setItem("refreshToken", responseData.value.token.refreshToken); 
-      // Store token in local storage
-      // Handle successful sign in (e.g., store token, redirect)
+      // Handle successful sign in (e.g., redirect)
       router.push("/"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Sign in error:", error);

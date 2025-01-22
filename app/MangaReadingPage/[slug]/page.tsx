@@ -15,16 +15,24 @@ import { usePathname } from 'next/navigation'
 const mangaInfo = {
   title: "One Piece",
   author: "Eiichiro Oda",
-  currentChapter: 1000,
-  totalChapters: 1050,
+  currentChapter: 2,
+  totalChapters: 100,
   pagesPerChapter: 20,
 }
 
 const chapters = Array.from({ length: mangaInfo.totalChapters }, (_, i) => i + 1)
 
+
+
+
+
 interface Params {
   slug: string;
 }
+
+
+
+
 
 export default function MangaReader({ params }: { params: Promise<Params> }) {
   const { slug } = use(params)
