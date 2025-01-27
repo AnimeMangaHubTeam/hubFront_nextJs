@@ -1,161 +1,148 @@
-'use client'
+"use client"
 
-import { useState, useRef, useCallback } from 'react'
-import { ChevronLeft, ChevronRight, Menu } from 'lucide-react'
-import { useSwipeable } from 'react-swipeable'
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Info, Menu, RotateCcw, List } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Toaster } from "@/components/ui/sonner"  // Changed to use sonner
-import { toast } from "sonner"  // Changed to use sonner's toast
-import { use } from 'react'
-import { usePathname } from 'next/navigation'
+import { SettingsSheet } from "@/components/mangaReadingPage/settings-sheet"
+import { ChaptersSheet } from "@/components/mangaReadingPage/chapters-sheet"
+import { MangaPages } from "@/components/mangaReadingPage/manga-pages"
+import type { ReaderSettings, Chapter, MangaPage } from "@/components/mangaReadingPage/types/reader"
+import { getMangaPages } from "@/components/mangaReadingPage/actions/manga"
+import Image from "next/image"
 
-// Mock data - replace with actual data fetching in a real application
-const mangaInfo = {
-  title: "One Piece",
-  author: "Eiichiro Oda",
-  currentChapter: 2,
-  totalChapters: 100,
-  pagesPerChapter: 20,
+const defaultSettings: ReaderSettings = {
+  readingMode: "vertical",
+  showAllChapters: false,
+  halfToneMode: false,
+  showPageNumbers: true,
+  showOriginal: false,
+  theme: "dark",
+  pageTransitionArea: "image",
+  imageFit: "width",
+  menuDisplay: "scroll",
+  containerWidth: 720,
+  brightness: 100,
+  autoScrollSpeed: 0,
 }
 
-const chapters = Array.from({ length: mangaInfo.totalChapters }, (_, i) => i + 1)
+const mockChapters: Chapter[] = [
+  { id: 1, title: "Как демон-император стал уборщиkиm", volume: 1, chapter: 1 },
+  // Add more chapters as needed
+]
 
+export default function MangaReader() {
+  const [settings, setSettings] = useState<ReaderSettings>(defaultSettings)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [chaptersOpen, setChaptersOpen] = useState(false)
+  const [currentChapter] = useState<Chapter>(mockChapters[0])
+  const [pages, setPages] = useState<MangaPage[]>([])
+  const [loading, setLoading] = useState(true)
 
-
-
-
-interface Params {
-  slug: string;
-}
-
-
-
-
-
-export default function MangaReader({ params }: { params: Promise<Params> }) {
-  const { slug } = use(params)
-
-  console.log(slug)
-  const path = usePathname();
-  console.log(path)
-
-  const [currentPage, setCurrentPage] = useState(1)
-  const [currentChapter, setCurrentChapter] = useState(mangaInfo.currentChapter)
-  const touchStartX = useRef(0)
-
-  const handlePrevPage = useCallback(() => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1)
-    } else if (currentChapter > 1) {
-      setCurrentChapter((prev) => prev - 1)
-      setCurrentPage(mangaInfo.pagesPerChapter)
-    } else {
-      toast("First page", {
-        description: "You're already on the first page of the first chapter.",
-      })
+  useEffect(() => {
+    const fetchPages = async () => {
+      try {
+        setLoading(true)
+        const mangaPages = await getMangaPages(currentChapter.id)
+        setPages(mangaPages)
+      } catch (error) {
+        console.error("Failed to fetch manga pages:", error)
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [currentPage, currentChapter])
 
-  const handleNextPage = useCallback(() => {
-    if (currentPage < mangaInfo.pagesPerChapter) {
-      setCurrentPage((prev) => prev + 1)
-    } else if (currentChapter < mangaInfo.totalChapters) {
-      setCurrentChapter((prev) => prev + 1)
-      setCurrentPage(1)
-    } else {
-      toast("Last page", {
-        description: "You've reached the last page of the last chapter.",
-      })
-    }
-  }, [currentPage, currentChapter])
+    fetchPages()
+  }, [currentChapter.id])
 
-  const handleChapterChange = (value: string) => {
-    setCurrentChapter(Number(value))
-    setCurrentPage(1)
-  }
-
-  const handlers = useSwipeable({
-    onSwipedLeft: handleNextPage,
-    onSwipedRight: handlePrevPage,
-    trackMouse: true
-  })
-
-  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, currentTarget } = e
-    const { left, width } = currentTarget.getBoundingClientRect()
-    const clickPosition = (clientX - left) / width
-
-    if (clickPosition < 0.3) {
-      handlePrevPage()
-    } else if (clickPosition > 0.7) {
-      handleNextPage()
-    }
+  const handleSettingsChange = (newSettings: Partial<ReaderSettings>) => {
+    setSettings((prev) => ({ ...prev, ...newSettings }))
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="border-b p-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">{mangaInfo.title}</h1>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Menu className="h-4 w-4" />
-              <span className="sr-only">Open menu</span>
+    <div className={`min-h-screen ${settings.theme === "dark" ? "dark" : ""}`}>
+      <div className="min-h-screen bg-black text-white flex flex-col">
+        {/* Top Navigation */}
+        <header className="flex items-center justify-between px-4 py-3 bg-zinc-900/50 sticky top-0 z-50">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={() => setChaptersOpen(true)}>
+              <List className="h-4 w-4" />
             </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>{mangaInfo.title}</SheetTitle>
-              <SheetDescription>By {mangaInfo.author}</SheetDescription>
-            </SheetHeader>
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Select Chapter</h3>
-              <Select value={currentChapter.toString()} onValueChange={handleChapterChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select chapter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {chapters.map((chapter) => (
-                    <SelectItem key={chapter} value={chapter.toString()}>
-                      Chapter {chapter}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </header>
+            <span className="text-sm text-zinc-300">Как демон-император ст...</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm">
+              Том {currentChapter.volume} Глава {currentChapter.chapter}
+            </span>
+            <Button variant="ghost" size="icon">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <Button variant="ghost" size="icon">
+            <Info className="h-4 w-4" />
+          </Button>
+        </header>
 
-      <main className="flex-grow flex flex-col items-center justify-center p-4">
-        <div 
-          className="relative max-w-3xl w-full aspect-[3/4] bg-muted rounded-lg overflow-hidden cursor-pointer"
-          onClick={handleImageClick}
-          {...handlers}
+        {/* Main Content */}
+        <main
+          className={`flex-1 flex justify-center bg-black relative ${
+            settings.readingMode === "horizontal" ? "overflow-x-auto" : "overflow-y-auto"
+          }`}
         >
-          <img
-            src={`/placeholder.svg?height=1200&width=900&text=Chapter ${currentChapter} - Page ${currentPage}`}
-            alt={`Chapter ${currentChapter}, Page ${currentPage}`}
-            className="w-full h-full object-contain"
-          />
-          <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-          <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
-        </div>
-        <div className="mt-4 flex justify-center items-center gap-4">
-          <Button onClick={handlePrevPage} disabled={currentPage === 1 && currentChapter === 1}>
-            <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-          </Button>
-          <span className="text-sm">
-            Page {currentPage} / Chapter {currentChapter}
-          </span>
-          <Button onClick={handleNextPage} disabled={currentPage === mangaInfo.pagesPerChapter && currentChapter === mangaInfo.totalChapters}>
-            Next <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </main>
-      <Toaster />
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-white">Loading...</div>
+            </div>
+          ) : (
+            <div className={`py-4 ${settings.readingMode === "horizontal" ? "px-0" : "px-4"}`}>
+              <MangaPages
+                pages={pages}
+                readingMode={settings.readingMode}
+                containerWidth={settings.containerWidth}
+                brightness={settings.brightness}
+              />
+            </div>
+          )}
+
+          {/* Side Controls */}
+          <div className="fixed right-4 bottom-4 flex flex-col gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-zinc-800/50"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" className="rounded-full bg-zinc-800/50">
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            {settings.showPageNumbers && (
+              <div className="text-xs text-zinc-400">{pages.length > 0 ? `1/${pages.length}` : ""}</div>
+            )}
+          </div>
+        </main>
+
+        {/* Settings Sheet */}
+        <SettingsSheet
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          settings={settings}
+          onSettingsChange={handleSettingsChange}
+        />
+
+        {/* Chapters Sheet */}
+        <ChaptersSheet
+          open={chaptersOpen}
+          onOpenChange={setChaptersOpen}
+          chapters={mockChapters}
+          currentChapter={currentChapter}
+          onChapterSelect={() => setChaptersOpen(false)}
+        />
+      </div>
     </div>
   )
 }
+

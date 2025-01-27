@@ -1,7 +1,9 @@
+'use client';
 import Banner from "@/components/banner";
 import MangaPreview from "@/components/mangaPreview";
 import MangaSlider from "@/components/mangaSlider";
-
+import { Button } from "@/components/ui/button";
+import axiosInstance from "@/lib/axios";
 
 const data = [ 
   {
@@ -15,15 +17,36 @@ const data = [
 
 
 export default function Home() {
+
+  const test = async (): Promise<void> => {
+    try {
+      const response = await axiosInstance.get('api/app/mangas/wrsdasdasd', 
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        }
+      );
+      
+      console.log('ok', response.data);
+    } catch (error: any) {
+      if (error.response) {
+        console.log('Error status:', error.response.status);
+        console.log('Error data:', error.response.data);
+      } else {
+        console.log('Error:', error.message);
+      }
+    }
+  }
+
   return (
     <div>
       <Banner />
+        <Button onClick={test}> test</Button>
       <div className="sm:container  mx-auto relative z-10 flex gap-2 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
         <MangaSlider 
         data={data}
         title="Special"/>
       </div>
-
 
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -25,7 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BASE_URL } from "@/lib/baseUrl";
+import axiosInstance from "@/lib/axios";
+import { useAuth } from "@/contexts/AuthContext";
 
 const signInSchema = z.object({
   login: z.string().min(1, { message: "Login is required" }),
@@ -35,6 +36,8 @@ const signInSchema = z.object({
 type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function SignInForm() {
+
+  const { setAuth } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -49,23 +52,26 @@ export default function SignInForm() {
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
-      const response = await fetch(`${BASE_URL}api/app/auth/sign-in`, {
-        method: "POST",
+      const response = await axiosInstance.post(`/api/app/auth/sign-in`, data, {
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        withCredentials: true,
       });
-      if (!response.ok) {
-        throw new Error("Sign in failed");
+  
+      if (response.data.success) {
+        setAuth({
+          isAuthenticated: true,
+          user: response.data.value.user
+        });
+        router.push("/");
+      } else {
+        setError("Login failed. Please try again.");
       }
-      const responseData = await response.json();
-      console.log("Response Data:", responseData);
-
-      // Handle successful sign in (e.g., redirect)
-      router.push("/"); // Redirect to dashboard or home page
     } catch (error) {
       console.error("Sign in error:", error);
       setError("Invalid login credentials. Please try again.");
     }
+
+    console.log()
   };
 
   return (

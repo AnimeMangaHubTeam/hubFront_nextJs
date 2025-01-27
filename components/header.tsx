@@ -6,24 +6,62 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import axios from "@/lib/axios";
 
-export default function Header({ isAdmin = false, isTranslator = false, isLoggedIn = false }) {
+export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const pathName = usePathname();
+  const { auth, setAuth } = useAuth();
+  
+  // Check if user is authenticated
+
+  // Access user data
+  const { id, userName, email, roles } = auth.user? auth.user : { id: 0, userName: "", email: "", roles: [] };
+  const isLoggedIn = auth.isAuthenticated ? true : false;
+
+
+  const handleLogout = async () => {
+    const data = {
+      "accessToken": "string",
+      "refreshToken": "string"
+    }
+    try {
+      await axios.post('/api/app/auth/logout', null, {
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
+      });
+      
+      setAuth({
+        isAuthenticated: false,
+        user: null
+      });
+      
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
 
   return (
-    <header
-      className={`bg-black ${isMenuOpen ? "bg-opacity-100" : "bg-opacity-75"}  text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
-        ${pathName === "/auth" || pathName.includes("mangaReadingPage") ? "hidden" : ""}
-        
+    <div
+      className={`bg-black ${
+        isMenuOpen ? "bg-opacity-100" : "bg-opacity-75"
+      }  text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
+        ${
+          pathName === "/auth" || pathName.includes("mangaReadingPage")
+            ? "hidden"
+            : ""
+        }
         `}
-        
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Site Name */}
-          <Link href="/" className="text-2xl font-bold italic tracking-wider text-red-600">
+          <Link
+            href="/"
+            className="text-2xl font-bold italic tracking-wider text-red-600"
+          >
             Tomodachi
           </Link>
           {/* Navigation for larger screens */}
@@ -56,7 +94,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
           </div>
           {/* Auth Buttons for larger screens */}
           <div className="hidden md:flex space-x-2">
-            {!isLoggedIn && (
+            {!isLoggedIn ? (
               <>
                 <Button variant="ghost" className="w-full">
                   <Link
@@ -79,15 +117,17 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
                   </Link>
                 </Button>
               </>
-            )}
-
-            {isAdmin && (
-              <Button variant="outline" size="sm" className="ml-2">
-                Admin
-              </Button>
+            ) : (
+              <>
+                <Link href="/profile" className="hover:text-gray-300">
+                  Profile
+                </Link>
+                <Button onClick={handleLogout} variant="ghost">
+                  Logout
+                </Button>
+              </>
             )}
           </div>
-            
           {/* Mobile menu button */}
           <Button
             variant="ghost"
@@ -99,67 +139,7 @@ export default function Header({ isAdmin = false, isTranslator = false, isLogged
             <span className="sr-only">Toggle menu</span>
           </Button>
         </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-2 transition-all ease-in-out duration-300">
-            <nav className="flex flex-col space-y-2">
-              <Link href="/" className="hover:text-gray-300">
-                Home
-              </Link>
-              <Link href="/manga/one-piece" className="hover:text-gray-300">
-                Catalog
-              </Link>
-              <Link href="/profile" className="hover:text-gray-300">
-                News
-              </Link>
-              <Link href="/collections" className="hover:text-gray-300">
-                Collections
-              </Link>
-            </nav>
-            <div className="flex items-center mt-2">
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full bg-white bg-opacity-20 border-none text-white placeholder-gray-300"
-              />
-              <Button size="icon" variant="ghost" className="ml-2">
-                <Search className="h-4 w-4" />
-                <span className="sr-only">Search</span>
-              </Button>
-            </div>
-            {!isLoggedIn && (
-              <div className="flex space-x-2 mt-2">
-                <Button variant="destructive" className="w-full">
-                  <Link
-                    href={{
-                      pathname: "/auth",
-                      query: { page: "signIn" },
-                    }}
-                  >
-                    Log In
-                  </Link>
-                </Button>
-                <Button className="w-full">
-                  <Link
-                    href={{
-                      pathname: "/auth",
-                      query: { page: "signUp" },
-                    }}
-                  >
-                    Sign Up
-                  </Link>
-                </Button>
-              </div>
-            )}
-            {isAdmin && (
-              <Button variant="outline" size="sm" className="mt-2 w-full">
-                Admin
-              </Button>
-            )}
-          </div>
-        )}
       </div>
-    </header>
+    </div>
   );
 }
