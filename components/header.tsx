@@ -22,10 +22,6 @@ export default function Header() {
 
 
   const handleLogout = async () => {
-    const data = {
-      "accessToken": "string",
-      "refreshToken": "string"
-    }
     try {
       await axios.post('/api/app/auth/logout', null, {
         headers: { 'Content-Type': 'application/json' },
@@ -119,8 +115,10 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/profile" className="hover:text-gray-300">
-                  Profile
+              <Link href="/mangaAdminPage">
+                <Button variant="ghost">
+                  admin
+                </Button>
                 </Link>
                 <Button onClick={handleLogout} variant="ghost">
                   Logout

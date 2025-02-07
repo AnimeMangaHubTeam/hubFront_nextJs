@@ -41,12 +41,12 @@ export default function Home() {
   return (
     <div>
       <Banner />
-        <Button onClick={test}> test</Button>
       <div className="sm:container  mx-auto relative z-10 flex gap-2 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
         <MangaSlider 
         data={data}
         title="Special"/>
       </div>
+        <Button onClick={test}> test</Button>
 
 
 

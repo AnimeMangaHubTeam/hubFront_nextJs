@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import axiosInstance from "axios";
+import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -81,23 +81,12 @@ export default function SignUpForm() {
 
   const onSubmit = async (data: SignUpFormValues) => {
     try {
+      console.log("trying to send data", data);
       const response = await axiosInstance.post(`/api/app/auth/sign-up`, data, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });
 
-      if (response.data.success) {
-        setAuth({
-          isAuthenticated: true,
-          user: response.data.value.user,
-        });
-        router.push("/");
-      } else {
-        form.setError("root", {
-          type: "manual",
-          message: "Sign up failed. Please try again.",
-        });
-      }
     } catch (error) {
       console.error("Sign up error:", error);
       form.setError("root", {

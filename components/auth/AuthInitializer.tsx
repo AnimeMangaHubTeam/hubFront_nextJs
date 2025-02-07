@@ -9,11 +9,13 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
 
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log('Initializing auth...');
       try {
         const response = await axiosInstance.get('/api/app/users/current-user', {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true
         });
+        console.log("error");
         console.log(response);
         if (response.data.success && response.data.value) {
           setAuth({
@@ -22,6 +24,7 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
           });
         }
       } catch (error:any) {
+        console.log("err");
         console.error('Failed to initialize auth:', error);
       }
     };
