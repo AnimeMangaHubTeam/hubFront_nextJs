@@ -7,7 +7,7 @@ import axiosInstance from "@/lib/axios";
 
 const data = [ 
   {
-      src: "https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=85,width=960/catalog/crunchyroll/323c82257b2f6567fabbb7bd55bfa753.jpg",
+      src: "https://animemangahub.synology.me/api/uploads/mangas/ua/9/photos/covers/mangae504ed4d-9b33-4607-bfe6-089e495758de.png",
       title: "One Piece",
       author:"Eiichiro Oda",
       genres: ["Adventure", "Fantasy"],

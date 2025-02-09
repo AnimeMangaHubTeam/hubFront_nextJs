@@ -13,31 +13,30 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathName = usePathname();
   const { auth, setAuth } = useAuth();
-  
+
   // Check if user is authenticated
 
   // Access user data
-  const { id, userName, email, roles } = auth.user? auth.user : { id: 0, userName: "", email: "", roles: [] };
+  const { id, userName, email, roles } = auth.user
+    ? auth.user
+    : { id: 0, userName: "", email: "", roles: [] };
   const isLoggedIn = auth.isAuthenticated ? true : false;
-
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/app/auth/logout', null, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
+      await axios.post("/api/app/auth/logout", null, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       });
-      
+
       setAuth({
         isAuthenticated: false,
-        user: null
+        user: null,
       });
-      
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
-
 
   return (
     <div
@@ -115,10 +114,8 @@ export default function Header() {
               </>
             ) : (
               <>
-              <Link href="/mangaAdminPage">
-                <Button variant="ghost">
-                  admin
-                </Button>
+                <Link href="/mangaAdminPage">
+                  <Button variant="ghost">admin</Button>
                 </Link>
                 <Button onClick={handleLogout} variant="ghost">
                   Logout

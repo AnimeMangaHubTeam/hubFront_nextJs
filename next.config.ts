@@ -1,22 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  //output: 'export',
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'example.com',
+        hostname: 'animemangahub.synology.me',
         port: '',
-        pathname: '/account123/**',
-        search: '',
+        pathname: '/api/uploads/**', // Updated pathname pattern
       },
       {
         protocol: 'https',
         hostname: 'imgsrv.crunchyroll.com',
         port: '',
         pathname: '/cdn-cgi/image/**',
-        search: '',
       },
     ],
   },

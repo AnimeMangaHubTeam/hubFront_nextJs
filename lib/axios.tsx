@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://localhost:7159",
+  //https://localhost:7159
+  baseURL: "https://animemangahub.synology.me",
   timeout: 10000,
 });
 
@@ -9,7 +10,7 @@ let isRefreshing = false;
 let failedQueue: any[] = [];
 
 const processQueue = (error: any) => {
-  failedQueue.forEach(prom => {
+  failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
@@ -28,22 +29,24 @@ axiosInstance.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then(() => {
-          return axiosInstance(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+        })
+          .then(() => {
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        await axiosInstance.post('/api/app/auth/refresh-token', null, {
+        await axiosInstance.post("/api/app/auth/refresh-token", null, {
           withCredentials: true,
-          headers: { 'accept': 'application/json' }
+          headers: { accept: "application/json" },
         });
-        
+
         processQueue(null);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
