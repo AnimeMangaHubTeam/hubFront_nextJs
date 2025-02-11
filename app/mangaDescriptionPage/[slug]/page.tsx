@@ -8,6 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookOpen, Star, BookMarked } from "lucide-react";
 import Link from "next/link";
+import { MangaDetails, MangaDetailsResponse } from "@/types/mainPageManga";
+import { useParams } from "next/navigation";
+import axiosInstance from "@/lib/axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { getMangaTypeName, getMangaStatusName, getTranslationStatusName } from '@/utils/enumUtils';
 
 import photo1 from "@/public/photo_2024-02-11_23-55-51.jpg";
 import photo2 from "@/public/photo_2024-04-24_21-12-15.jpg";
@@ -18,34 +23,59 @@ export default function MangaPage() {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const params = useParams();
+  const mangaId = params.slug; // This will get "17" from the URL
+  const [manga, setManga] = useState<MangaDetails | null>(null);
+  const { auth, setAuth } = useAuth();
 
-  const [mangaData, setMangaData] = useState({
-    title: "Attack on Titan",
-    cover:
-      "https://imgsrv.crunchyroll.com/cdn-cgi/image/fit=contain,format=auto,quality=85,width=960/catalog/crunchyroll/323c82257b2f6567fabbb7bd55bfa753.jpg",
-    description:
-      "Join the interstellar adventure of Captain Zara and her diverse crew as they navigate the challenges of deep space exploration, encounter alien civilizations, and uncover the mysteries of the universe. Join the interstellar adventure of Captain Zara and her diverse crew as they navigate the challenges of deep space exploration, encounter alien civilizations, and uncover the mysteries of the universe.",
-    author: "Stella Novacraft",
-    artist: "Luna Stardust",
-    status: "Ongoing",
-    genres: ["Sci-Fi", "Adventure", "Drama"],
-    chapters: 42,
-    lastUpdated: "2023-11-15",
-    rating: 4.7,
-    totalRatings: 1000,
-  });
+  useEffect(() => {
+    const fetchMangaData = async () => {
+      try {
+        const response = await axiosInstance.get<MangaDetailsResponse>(
+          `/api/app/mangas/${mangaId}`
+        );
+        if (response.data.success) {
+          setManga(response.data.value);
+        }
+      } catch (error) {
+        console.error("Failed to fetch manga:", error);
+      }
+    };
 
-  const handleRating = (rating: number) => {
-    if (isLoggedIn) {
-      setUserRating(rating);
-      const newTotalRatings = mangaData.totalRatings + 1;
-      const newRating =
-        (mangaData.rating * mangaData.totalRatings + rating) / newTotalRatings;
-      setMangaData({
-        ...mangaData,
-        rating: Number(newRating.toFixed(1)),
-        totalRatings: newTotalRatings,
-      });
+    if (mangaId) {
+      fetchMangaData();
+    }
+  }, [mangaId]);
+
+  if (!manga) {
+    return <div>Loading...</div>;
+  }
+
+  const updateMangaRating = async (rating: number) => {
+    try {
+      const response = await axiosInstance.post(
+        `/api/app/mangas/${mangaId}`,
+        {
+          userId: auth.user?.id,
+          value: rating,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setUserRating(rating);
+      }
+    } catch (error) {
+      console.error("Failed to update rating:", error);
+    }
+  };
+
+  const handleRating = async (rating: number) => {
+    if (auth.isAuthenticated && manga) {
+      await updateMangaRating(rating);
     } else {
       alert("Please log in to rate this manga.");
     }
@@ -56,14 +86,14 @@ export default function MangaPage() {
       <div className="max-w-6xl mx-auto mt-24">
         <div className="flex place-content-between items-center flex-col sm:flex-row mb-4">
           <h1 className="text-4xl font-bold mb-4 text-transparent bg-clip-text text-white">
-            {mangaData.title}
+            {manga.title}
           </h1>
           <div className="flex items-center gap-4">
             <div className="flex items-center">
               <Star className="text-yellow-400 w-5 h-5 mr-1" />
-              <span className="font-bold text-lg">{mangaData.rating}</span>
+              <span className="font-bold text-lg">{manga.avgRating}</span>
               <span className="text-sm text-gray-400 ml-1">
-                ({mangaData.totalRatings})
+                ({manga.countRating})
               </span>
             </div>
             <div className="flex items-center border-l border-gray-700 pl-4">
@@ -92,8 +122,8 @@ export default function MangaPage() {
         <div className="flex flex-col md:flex-row gap-8 mb-8">
           <div className="sm:w-1/3 md:w-1/4 flex flex-col items-center">
             <Image
-              src={mangaData.cover}
-              alt={mangaData.title}
+              src={manga.imageUrl}
+              alt={manga.title}
               width={300}
               height={400}
               draggable={false}
@@ -102,62 +132,67 @@ export default function MangaPage() {
 
             <div className="flex items-center gap-4 w-full mt-4">
               {isLoggedIn ? (
-                <Link href={`/mangaReadingPage/${mangaData.title}`} className="w-full">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6 shadow-lg rounded-sm">
-                  <BookMarked className="mr-2 h-5 w-5" /> Continue Reading
-                </Button>
+                <Link
+                  href={`/mangaReadingPage/${manga.title}`}
+                  className="w-full"
+                >
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-6 shadow-lg rounded-sm">
+                    <BookMarked className="mr-2 h-5 w-5" /> Continue Reading
+                  </Button>
                 </Link>
               ) : (
-                <Link href={`/mangaReadingPage/${mangaData.title}`} className="w-full">
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-lg py-6 shadow-lg rounded-sm">
-                  <BookOpen className="mr-2 h-5 w-5" /> Start Reading
-                </Button>
+                <Link
+                  href={`/mangaReadingPage/${manga.title}`}
+                  className="w-full"
+                >
+                  <Button className="w-full bg-green-600 hover:bg-green-700 text-lg py-6 shadow-lg rounded-sm">
+                    <BookOpen className="mr-2 h-5 w-5" /> Start Reading
+                  </Button>
                 </Link>
               )}
             </div>
           </div>
           <div className="flex-1">
             <p className="mb-6 text-lg leading-relaxed text-gray-300">
-              {mangaData.description}
+              {manga.description}
             </p>
             <Card className="bg-stone-900 text-gray-100 border-stone-800 shadow-lg rounded-sm">
               <div
-                className={`
-    relative 
-    transition-all 
-    duration-300 
-    ease-in-out
-    overflow-hidden
-    ${isExpanded ? "max-h-[2000px]" : "max-h-[353px]"}
-  `}
+                className={`relative transition-all duration-300 ease-in-out overflow-hidden ${
+                  isExpanded ? "max-h-[2000px]" : "max-h-[353px]"
+                }`}
               >
                 <CardContent className="p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Author</p>
-                      <p className="font-semibold">{mangaData.author}</p>
+                      <p className="font-semibold">{manga.author}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Artist</p>
-                      <p className="font-semibold">{mangaData.artist}</p>
+                      <p className="font-semibold">{manga.artist}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 mb-1 text-sm">Type</p>
+                      <p className="font-semibold">{getMangaTypeName(manga.type)}</p>
                     </div>
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Manga Status</p>
-                      <p className="font-semibold">{mangaData.status}</p>
+                      <p className="font-semibold">{manga.status}</p>
                     </div>
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">
                         Translate Status
                       </p>
-                      <p className="font-semibold">{mangaData.status}</p>
+                      <p className="font-semibold">{manga.status}</p>
                     </div>
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Genres</p>
                       <div className="flex flex-wrap gap-2">
-                        {mangaData.genres.map((genre) => (
+                        {manga.mangaGenres.map((genre) => (
                           <span
                             key={genre}
                             className="px-2 py-1 bg-gray-800 rounded-full text-xs text-gray-200"
@@ -169,42 +204,31 @@ export default function MangaPage() {
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Chapters</p>
-                      <p className="font-semibold">{mangaData.chapters}</p>
+                      <p className="font-semibold">{manga.chapters}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">
                         start of release{" "}
                       </p>
-                      <p className="font-semibold">{mangaData.lastUpdated}</p>
+                      <p className="font-semibold">{manga.lastUpdated}</p>
                     </div>
-
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">
                         different names
                       </p>
                       <p className="font-semibold">
-                        {mangaData.title} {mangaData.title} {mangaData.title}
+                        {manga.title} {manga.title} {manga.title}
                       </p>
                     </div>
                   </div>
                 </CardContent>
                 <div
-                  className={`
-      sticky 
-      bottom-0 
-      left-0 
-      right-0 
-      h-20
-      flex 
-      items-end 
-      justify-center
-      ${
-        isExpanded
-          ? "bg-gradient-to-t from-stone-900/90 to-transparent"
-          : "bg-gradient-to-t from-stone-900 to-transparent"
-      }
-    `}
+                  className={`sticky bottom-0 left-0 right-0 h-20 flex items-end justify-center ${
+                    isExpanded
+                      ? "bg-gradient-to-t from-stone-900/90 to-transparent"
+                      : "bg-gradient-to-t from-stone-900 to-transparent"
+                  }`}
                 >
                   <Button
                     variant="ghost"
@@ -245,7 +269,7 @@ export default function MangaPage() {
               <Button className="bg-stone-700 text-gray-300 hover:bg-stone-700 flex w-auto h-auto">
                 <Image
                   src={photo1}
-                  alt={mangaData.title}
+                  alt={manga.title}
                   width={40}
                   height={40}
                   draggable={false}
@@ -256,7 +280,7 @@ export default function MangaPage() {
               <Button className="bg-stone-800 text-gray-300 hover:bg-stone-700 flex w-auto h-auto">
                 <Image
                   src={photo2}
-                  alt={mangaData.title}
+                  alt={manga.title}
                   width={40}
                   height={40}
                   draggable={false}
@@ -269,7 +293,7 @@ export default function MangaPage() {
               <CardContent className="p-4">
                 <ScrollArea className="h-[400px] pr-4">
                   <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4">
-                    {[...Array(mangaData.chapters)].map((_, index) => (
+                    {[...Array(manga.chapters)].map((_, index) => (
                       <Button
                         key={index + 1}
                         variant={

@@ -1,81 +1,131 @@
-'use client';
+"use client";
 import Banner from "@/components/banner";
 import MangaPreview from "@/components/mangaPreview";
 import MangaSlider from "@/components/mangaSlider";
 import { Button } from "@/components/ui/button";
 import axiosInstance from "@/lib/axios";
-
-const data = [ 
-  {
-      src: "https://animemangahub.synology.me/api/uploads/mangas/ua/9/photos/covers/mangae504ed4d-9b33-4607-bfe6-089e495758de.png",
-      title: "One Piece",
-      author:"Eiichiro Oda",
-      genres: ["Adventure", "Fantasy"],
-      description: "As a child, Monkey D. Luffy dreamed of becoming King of the Pirates. But his life changed when he accidentally gained the power to stretch like rubber...at the cost of never being able to swim again! Now Luffy, with the help of a motley collection of pirate wannabes, is setting off in search of the One Piece, said to be the greatest treasure in the world..."
-  },
-]
+import { useState, useEffect } from "react";
+import { Manga, MangaListResponse } from "@/types/mainPageManga";
+import { MangaSliderSkeleton } from "@/components/mangaSkeleton"
 
 
 export default function Home() {
+  const [newMangas, setNewMangas] = useState<Manga[]>([]);
+  const [updatedMangas, setUpdatedMangas] = useState<Manga[]>([]);
+  const [popularMangas, setPopularMangas] = useState<Manga[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  useEffect(() => {
+    const fetchMangas = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=true&IsUpdated=false&IsPopular=false&CurrentPage=1&PageSize=10", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        console.log("ok", response.data.value);
+        setNewMangas(response.data.value);
+      } catch (error: any) {
+        if (error.response) {
+          console.log("Error status:", error.response.status);
+          console.log("Error data:", error.response.data);
+        } else {
+          console.log("Error:", error.message);
+        }
+      } finally{
+        setIsLoading(false);
+      }
+    };
+    fetchMangas();
+  }, []);
+
+  useEffect(() => {
+    const fetchMangas = async () => {
+      try {
+        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=false&IsUpdated=true&IsPopular=false&CurrentPage=1&PageSize=10", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        console.log("ok", response.data.value);
+        setUpdatedMangas(response.data.value);
+      } catch (error: any) {
+        if (error.response) {
+          console.log("Error status:", error.response.status);
+          console.log("Error data:", error.response.data);
+        } else {
+          console.log("Error:", error.message);
+        }
+      }
+    };
+    fetchMangas();
+  }, []);
+
+  useEffect(() => {
+    const fetchMangas = async () => {
+      try {
+        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=false&IsUpdated=false&IsPopular=true&CurrentPage=1&PageSize=10", {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        });
+        console.log("ok", response.data.value);
+        setPopularMangas(response.data.value);
+      } catch (error: any) {
+        if (error.response) {
+          console.log("Error status:", error.response.status);
+          console.log("Error data:", error.response.data);
+        } else {
+          console.log("Error:", error.message);
+        }
+      }
+    };
+    fetchMangas();
+  }, []);
+
+
 
   const test = async (): Promise<void> => {
     try {
-      const response = await axiosInstance.get('api/app/mangas/wrsdasdasd', 
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
-        }
-      );
-      
-      console.log('ok', response.data);
+      const response = await axiosInstance.get("api/app/mangas/wrsdasdasd", {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      });
+
+      console.log("ok", response.data);
     } catch (error: any) {
       if (error.response) {
-        console.log('Error status:', error.response.status);
-        console.log('Error data:', error.response.data);
+        console.log("Error status:", error.response.status);
+        console.log("Error data:", error.response.data);
       } else {
-        console.log('Error:', error.message);
+        console.log("Error:", error.message);
       }
     }
-  }
+  };
 
   return (
     <div>
       <Banner />
-      <div className="sm:container  mx-auto relative z-10 flex gap-2 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
-        <MangaSlider 
-        data={data}
-        title="Special"/>
+      <div className="sm:container mx-auto relative z-10 lg:mt-[-10rem] md:mt-[-5rem] mt-[-2rem] mb-16">
+        {isLoading ? (
+          <MangaSliderSkeleton />
+        ) : (
+          <MangaSlider data={newMangas} title="New manga" />
+        )}
       </div>
-        <Button onClick={test}> test</Button>
-
-
-
-
-
-
-
-
-
-
-      <div className="sm:container mx-auto ">
-      <MangaSlider 
-        data={data}
-        title="Special"/>
-        <MangaSlider 
-        data={data}
-        title="Special"/>
-        <MangaSlider 
-        data={data}
-        title="Special"/>
+      <div className="sm:container mx-auto">
+        {isLoading ? (
+          <>
+            <MangaSliderSkeleton />
+            <MangaSliderSkeleton />
+          </>
+        ) : (
+          <>
+            <MangaSlider data={updatedMangas} title="Last updated manga" />
+            <MangaSlider data={popularMangas} title="Most popular manga" />
+          </>
+        )}
       </div>
-
-
-
-
-
-
-      <div>
-      </div>
+      
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, quos
       molestiae officiis nisi voluptatibus odit consectetur doloribus reiciendis
       iusto iure iste suscipit cum nesciunt alias tempora aperiam porro ullam

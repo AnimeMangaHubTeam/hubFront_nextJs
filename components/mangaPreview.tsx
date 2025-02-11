@@ -7,26 +7,14 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ChevronRight, Star } from "lucide-react"
 import Link from "next/link"
+import { Manga } from "@/types/mainPageManga"
 
 interface MangaPreviewProps {
-  src: string
-  title: string
-  author: string
-  genres: string[]
-  description: string
-  rating: number
+  manga: Manga;
 }
 
-export default function Component({ 
-  src = "/placeholder.svg?height=400&width=300", 
-  title = "Manga Title", 
-  author = "Author Name", 
-  genres = ["Action", "Adventure"], 
-  description = "text", 
-  rating = 4.5 
-}: MangaPreviewProps) {
+export default function MangaPreviewComponent({ manga }: MangaPreviewProps) {
   const [isHovered, setIsHovered] = useState(false)
-
   const handleMouseEnter = () => setIsHovered(true)
   const handleMouseLeave = () => setIsHovered(false)
 
@@ -38,8 +26,8 @@ export default function Component({
     >
       <div className="relative aspect-[3/4] w-full overflow-hidden">
         <Image
-          src={src}
-          alt={`Cover of ${title}`}
+          src={manga.imageUrl}
+          alt={`Cover of ${manga.title}`}
           fill
           className="object-cover transition-all duration-300 ease-in-out group-hover:scale-110"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 300px"
@@ -47,14 +35,14 @@ export default function Component({
       </div>
       <CardContent className="absolute inset-0 flex flex-col justify-end p-0 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:bg-black/70 z-10">
         <div className="p-4">
-          <h2 className="mb-1 text-2xl font-bold leading-tight">{title}</h2>
-          <p className="mb-2 text-sm font-medium">by {author}</p>
+          <h2 className="mb-1 text-2xl font-bold leading-tight">{manga.title}</h2>
+          <p className="mb-2 text-sm font-medium">by {manga.author}</p>
           <div className="mb-2 flex items-center">
             <Star className="mr-1 h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+            <span className="text-sm font-medium">{manga.avgRating.toFixed(1)}</span>
           </div>
           <div className="mb-2 flex flex-wrap gap-2">
-            {genres.map((genre) => (
+            {manga.mangaGenres.map((genre) => (
               <Badge
                 key={genre}
                 variant="secondary"
@@ -64,11 +52,11 @@ export default function Component({
               </Badge>
             ))}
           </div>
-          <p className="mb-4 text-sm line-clamp-3">{description}</p>
+          <p className="mb-4 text-sm line-clamp-3">{manga.description}</p>
         </div>
-        <Link href={`/mangaDescriptionPage/${title}`} className="w-full z-20">
+        <Link href={`/mangaDescriptionPage/${manga.id}`} className="w-full z-20">
           <Button
-            className="w-full h-12 rounded-sm rounded-t-none relative z-20" // Changed h-14 to h-12
+            className="w-full h-12 rounded-sm rounded-t-none relative z-20"
             variant="destructive"
           >
             Read Now
@@ -77,16 +65,14 @@ export default function Component({
         </Link>
       </CardContent>
       <CardFooter className="bg-stone-200 py-0 h-12 group-hover:bg-stone-900">
-        {" "}
-        {/* Changed py-3 to py-0 and added h-12 */}
         <h2
           className={`w-full truncate text-center text-lg font-bold ${
             isHovered ? "opacity-0" : undefined
           }`}
         >
-          {title}
+          {manga.title}
         </h2>
       </CardFooter>
     </Card>
-  );
+  )
 }

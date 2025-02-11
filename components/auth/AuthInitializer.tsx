@@ -20,12 +20,11 @@ export default function AuthInitializer({ children }: { children: React.ReactNod
         if (response.data.success && response.data.value) {
           setAuth({
             isAuthenticated: true,
-            user: response.data.value.user
+            user: response.data.value
           });
         }
       } catch (error:any) {
-        console.log("err");
-        console.error('Failed to initialize auth:', error);
+        console.log("no refresh token or expired refresh token")
       }
     };
 
