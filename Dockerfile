@@ -1,21 +1,24 @@
 FROM node:21.5-alpine
 
+# Create the directory on the node image
+# where our Next.js app will live
+RUN mkdir -p /app
+
+# Set /app as the working directory in container
 WORKDIR /app
 
-# Install dependencies only when needed
+# Copy package.json and package-lock.json
+# to the /app working directory
 COPY package*.json ./
+
+# Install dependencies in /app
 RUN npm install
 
-# Copy rest of the files
+# Copy the rest of our Next.js folder into /app
 COPY . .
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Ensure port 8080 is accessible to our system
+EXPOSE 8001
 
-# Build Next.js
-RUN npm run build
-
-# Start Next.js in development mode based on the command from docker-compose
-CMD ["npm", "run", "dev"]
+# Run dev, as we would via the command line
+CMD npm run dev

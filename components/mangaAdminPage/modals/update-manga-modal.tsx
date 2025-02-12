@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import type { Manga } from "@/types/manga"
+import { Manga } from "@/components/mangaAdminPage/types/manga"
 import { updateManga, uploadMangaCover } from "@/actions/manga-actions"
 
 interface UpdateMangaModalProps {

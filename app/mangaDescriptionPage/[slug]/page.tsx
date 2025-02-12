@@ -179,14 +179,14 @@ export default function MangaPage() {
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Manga Status</p>
-                      <p className="font-semibold">{manga.status}</p>
+                      <p className="font-semibold">{/*manga.status*/}</p>
                     </div>
 
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">
                         Translate Status
                       </p>
-                      <p className="font-semibold">{manga.status}</p>
+                      <p className="font-semibold">{/*manga.status*/}</p>
                     </div>
 
                     <div>
@@ -210,7 +210,7 @@ export default function MangaPage() {
                       <p className="text-gray-400 mb-1 text-sm">
                         start of release{" "}
                       </p>
-                      <p className="font-semibold">{manga.lastUpdated}</p>
+                      <p className="font-semibold">{/*manga.lastUpdated*/}</p>
                     </div>
 
                     <div>
