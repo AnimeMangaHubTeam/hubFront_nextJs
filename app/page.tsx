@@ -7,6 +7,7 @@ import axiosInstance from "@/lib/axios";
 import { useState, useEffect } from "react";
 import { Manga, MangaListResponse } from "@/types/mainPageManga";
 import { MangaSliderSkeleton } from "@/components/mangaSkeleton"
+import Image from "next/image";
 
 
 export default function Home() {
@@ -38,6 +39,7 @@ export default function Home() {
       }
     };
     fetchMangas();
+    
   }, []);
 
   useEffect(() => {
@@ -125,7 +127,7 @@ export default function Home() {
           </>
         )}
       </div>
-      
+
       Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, quos
       molestiae officiis nisi voluptatibus odit consectetur doloribus reiciendis
       iusto iure iste suscipit cum nesciunt alias tempora aperiam porro ullam

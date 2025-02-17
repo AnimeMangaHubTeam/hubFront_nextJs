@@ -13,6 +13,7 @@ COPY package*.json ./
 
 # Install dependencies in /app
 RUN npm install
+RUN npm install sharp
 
 # Copy the rest of our Next.js folder into /app
 COPY . .

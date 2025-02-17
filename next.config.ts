@@ -2,32 +2,38 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    domains: [
+      "tomodachi.mooo.com",
+      "tomodachi.synology.me",
+      "imgsrv.crunchyroll.com"
+    ],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "https://tomodachi.mooo.com",
-        port: "",
-        // Updated pathname pattern
+        hostname: "tomodachi.mooo.com",
+        pathname: "/api/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "tomodachi.mooo.com",
+        pathname: "/api/uploads/**",
       },
       {
         protocol: "https",
-        hostname: "tomodachi.mooo.com",
-        port: "",
+        hostname: "tomodachi.synology.me",
         pathname: "/api/uploads/**",
       },
       {
         protocol: "https",
         hostname: "imgsrv.crunchyroll.com",
-        port: "",
         pathname: "/cdn-cgi/image/**",
-      },
+      }
     ],
+    unoptimized: true // Add this to disable image optimization if needed
   },
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
-  },
+  }
 };
 
 export default nextConfig;
