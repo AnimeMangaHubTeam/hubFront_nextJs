@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     domains: [
       "tomodachi.mooo.com",
@@ -32,7 +33,7 @@ const nextConfig: NextConfig = {
     unoptimized: true // Add this to disable image optimization if needed
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true,// Add this to disable eslint during builds
   }
 };
 
