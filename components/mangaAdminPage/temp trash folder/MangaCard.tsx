@@ -1,10 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Info, Pencil, Trash, Star } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react";
+import Image from "next/image";
+import { Info, Pencil, Trash, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,21 +21,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Manga } from "@/components/mangaAdminPage/types/manga"
-import { deleteManga } from "@/actions/manga-actions"
-import { UpdateMangaModal } from "@/components/mangaAdminPage/modals/UpdateMangaModal"
-import { MangaDetailsModal } from "@/components/mangaAdminPage/modals/MangaDetailsModal"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+} from "@/components/ui/alert-dialog";
+import { Manga } from "@/components/mangaAdminPage/types/manga";
+import { deleteManga } from "@/actions/manga-actions";
+import { UpdateMangaModal } from "@/components/mangaAdminPage/modals/UpdateMangaModal";
+import { MangaDetailsModal } from "@/components/mangaAdminPage/temp trash folder/MangaDetailsModal";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MangaCardProps {
-  manga: Manga
+  manga: Manga;
 }
 
 export function MangaCard({ manga }: MangaCardProps) {
-  const [showUpdateModal, setShowUpdateModal] = useState(false)
-  const [mangaDetailsModal, setMangaDetailsModal] = useState(false)
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [mangaDetailsModal, setMangaDetailsModal] = useState(false);
 
   return (
     <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg">
@@ -53,7 +64,11 @@ export function MangaCard({ manga }: MangaCardProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={() => setShowUpdateModal(true)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowUpdateModal(true)}
+              >
                 <Pencil className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -65,7 +80,11 @@ export function MangaCard({ manga }: MangaCardProps) {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" onClick={() => setMangaDetailsModal(true)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMangaDetailsModal(true)}
+              >
                 <Info className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
@@ -93,7 +112,8 @@ export function MangaCard({ manga }: MangaCardProps) {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete Manga</AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to delete {manga.title}? This action cannot be undone.
+                Are you sure you want to delete {manga.title}? This action
+                cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -108,8 +128,16 @@ export function MangaCard({ manga }: MangaCardProps) {
           </AlertDialogContent>
         </AlertDialog>
       </CardFooter>
-      <UpdateMangaModal manga={manga} open={showUpdateModal} onOpenChange={setShowUpdateModal} />
-      <MangaDetailsModal manga={manga} open={mangaDetailsModal} onOpenChange={setMangaDetailsModal} />
+      {/* <UpdateMangaModal
+        manga={manga}
+        open={showUpdateModal}
+        onOpenChange={setShowUpdateModal}
+      /> */}
+      <MangaDetailsModal
+        manga={manga}
+        open={mangaDetailsModal}
+        onOpenChange={setMangaDetailsModal}
+      />
     </Card>
-  )
+  );
 }

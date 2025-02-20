@@ -5,9 +5,11 @@ export interface Manga {
   description: string;
   imageUrl: string;
   type: MangaType;
-  mangaGenres: string[];
+  mangaGenres: { id: number; name: string }[];
   avgRating: number;
   countRating: number;
+  publisher: string
+  artist: string
 }
 
 export enum MangaType {

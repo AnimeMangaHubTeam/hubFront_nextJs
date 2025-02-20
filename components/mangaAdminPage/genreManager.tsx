@@ -1,81 +1,97 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import axiosInstance from "@/lib/axios"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import axiosInstance from "@/lib/axios";
 
 interface Genre {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 interface GenreManagerProps {
-  onGenresChange: (selectedGenres: number[]) => void
-  initialSelectedGenres?: number[]
+  onGenresChange: (selectedGenres: number[]) => void;
+  initialSelectedGenres?: Genre[];
 }
 
-export function GenreManager({ onGenresChange, initialSelectedGenres = [] }: GenreManagerProps) {
-  const [genres, setGenres] = useState<Genre[]>([])
-  const [selectedGenres, setSelectedGenres] = useState<number[]>(initialSelectedGenres)
-  const [isManageGenresOpen, setIsManageGenresOpen] = useState(false)
-  const [newGenre, setNewGenre] = useState("")
-  const [editingGenre, setEditingGenre] = useState<Genre | null>(null)
+export function GenreManager({
+  onGenresChange,
+  initialSelectedGenres = [],
+}: GenreManagerProps) {
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenres, setSelectedGenres] = useState<number[]>(
+    initialSelectedGenres.map((genre) => genre.id)
+  );
+  const [isManageGenresOpen, setIsManageGenresOpen] = useState(false);
+  const [newGenre, setNewGenre] = useState("");
+  const [editingGenre, setEditingGenre] = useState<Genre | null>(null);
 
   useEffect(() => {
-    fetchGenres()
-  }, [])
+    fetchGenres();
+  }, []);
 
   const fetchGenres = async () => {
     try {
-      const response = await axiosInstance.get("/api/genres")
-      setGenres(response.data.value || [])
+      const response = await axiosInstance.get("/api/genres");
+      setGenres(response.data.value || []);
     } catch (error) {
-      console.error("Error fetching genres:", error)
+      console.error("Error fetching genres:", error);
     }
-  }
+  };
 
   const createGenre = async () => {
     try {
-      await axiosInstance.post("/api/genres", { name: newGenre })
-      setNewGenre("")
-      fetchGenres()
+      await axiosInstance.post("/api/genres", { name: newGenre });
+      setNewGenre("");
+      fetchGenres();
     } catch (error) {
-      console.error("Error creating genre:", error)
+      console.error("Error creating genre:", error);
     }
-  }
+  };
 
   const updateGenre = async () => {
-    if (!editingGenre) return
+    if (!editingGenre) return;
     try {
       await axiosInstance.put(`/api/genres/`, {
         id: editingGenre.id,
-        name: editingGenre.name 
-    })
-      setEditingGenre(null)
-      fetchGenres()
+        name: editingGenre.name,
+      });
+      setEditingGenre(null);
+      fetchGenres();
     } catch (error) {
-      console.error("Error updating genre:", error)
+      console.error("Error updating genre:", error);
     }
-  }
+  };
 
   const deleteGenre = async (id: number) => {
     try {
-      await axiosInstance.delete(`/api/genres/`, { data: { id } })
-      fetchGenres()
+      await axiosInstance.delete(`/api/genres/`, { data: { id } });
+      fetchGenres();
     } catch (error) {
-      console.error("Error deleting genre:", error)
+      console.error("Error deleting genre:", error);
     }
-  }
+  };
 
   const handleGenreSelection = (genreIds: string[]) => {
-    const newSelectedGenres = genreIds.map(Number)
-    setSelectedGenres(newSelectedGenres)
-    onGenresChange(newSelectedGenres)
-  }
+    const newSelectedGenres = genreIds.map(Number);
+    setSelectedGenres(newSelectedGenres);
+    onGenresChange(newSelectedGenres);
+  };
 
   return (
     <div className="space-y-4">
@@ -86,7 +102,10 @@ export function GenreManager({ onGenresChange, initialSelectedGenres = [] }: Gen
         </Button>
       </div>
 
-      <Select onValueChange={(value) => handleGenreSelection([value])}>
+      <Select
+        onValueChange={(value) => handleGenreSelection([value])}
+        defaultValue={initialSelectedGenres[0]?.id.toString()}
+      >
         <SelectTrigger>
           <SelectValue placeholder="Select genres" />
         </SelectTrigger>
@@ -125,20 +144,34 @@ export function GenreManager({ onGenresChange, initialSelectedGenres = [] }: Gen
                     <>
                       <Input
                         value={editingGenre.name}
-                        onChange={(e) => setEditingGenre({ ...editingGenre, name: e.target.value })}
+                        onChange={(e) =>
+                          setEditingGenre({
+                            ...editingGenre,
+                            name: e.target.value,
+                          })
+                        }
                       />
                       <Button onClick={updateGenre}>Save</Button>
-                      <Button variant="outline" onClick={() => setEditingGenre(null)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingGenre(null)}
+                      >
                         Cancel
                       </Button>
                     </>
                   ) : (
                     <>
                       <span>{genre.name}</span>
-                      <Button variant="outline" onClick={() => setEditingGenre(genre)}>
+                      <Button
+                        variant="outline"
+                        onClick={() => setEditingGenre(genre)}
+                      >
                         Edit
                       </Button>
-                      <Button variant="destructive" onClick={() => deleteGenre(genre.id)}>
+                      <Button
+                        variant="destructive"
+                        onClick={() => deleteGenre(genre.id)}
+                      >
                         Delete
                       </Button>
                     </>
@@ -150,6 +183,5 @@ export function GenreManager({ onGenresChange, initialSelectedGenres = [] }: Gen
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
-

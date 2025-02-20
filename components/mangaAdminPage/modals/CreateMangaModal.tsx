@@ -80,37 +80,69 @@ export function CreateMangaModal() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create New Manga</Button>
+        <Button className="bg-amber-500 hover:bg-amber-600 text-black">
+          Create New Manga
+        </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-3xl bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle>Create New Manga</DialogTitle>
+          <DialogTitle className="text-amber-500">Create New Manga</DialogTitle>
         </DialogHeader>
         <form action={onSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" name="title" required />
+              <Label htmlFor="title" className="text-zinc-400">
+                Title
+              </Label>
+              <Input
+                id="title"
+                name="title"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="author">Author</Label>
-              <Input id="author" name="author" required />
+              <Label htmlFor="author" className="text-zinc-400">
+                Author
+              </Label>
+              <Input
+                id="author"
+                name="author"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="artist">Artist</Label>
-              <Input id="artist" name="artist" required />
+              <Label htmlFor="artist" className="text-zinc-400">
+                Artist
+              </Label>
+              <Input
+                id="artist"
+                name="artist"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="publisher">Publisher</Label>
-              <Input id="publisher" name="publisher" required />
+              <Label htmlFor="publisher" className="text-zinc-400">
+                Publisher
+              </Label>
+              <Input
+                id="publisher"
+                name="publisher"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="type">Type</Label>
+              <Label htmlFor="type" className="text-zinc-400">
+                Type
+              </Label>
               <Select name="type" required>
-                <SelectTrigger>
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-100">
                   {[...Array(10)].map((_, i) => (
                     <SelectItem key={i + 1} value={(i + 1).toString()}>
                       Type {i + 1}
@@ -120,18 +152,28 @@ export function CreateMangaModal() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="translatorMangaTeamId">Translator Team ID</Label>
+              <Label htmlFor="translatorMangaTeamId" className="text-zinc-400">
+                Translator Team ID
+              </Label>
               <Input
                 id="translatorMangaTeamId"
                 name="translatorMangaTeamId"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" name="description" required />
+            <Label htmlFor="description" className="text-zinc-400">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              name="description"
+              className="bg-zinc-800 border-zinc-700 text-zinc-100"
+              required
+            />
           </div>
 
           <div className="space-y-2">
@@ -142,17 +184,25 @@ export function CreateMangaModal() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="file">Cover Image</Label>
+            <Label htmlFor="file" className="text-zinc-400">
+              Cover Image
+            </Label>
             <Input
               id="file"
               name="file"
               type="file"
               accept="image/*"
+              className="bg-zinc-800 border-zinc-700 text-zinc-100"
               required
             />
           </div>
 
-          <Button type="submit">Create</Button>
+          <Button
+            type="submit"
+            className="bg-amber-500 text-black hover:bg-amber-600"
+          >
+            Create
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChapterDetailsModal } from "@/components/mangaAdminPage/modals/ChapterDetailsModal"
+import { ChapterDetailsModal } from "@/components/mangaAdminPage/temp trash folder/ChapterDetailsModal"
 
 interface ChapterCardProps {
   chapter: {

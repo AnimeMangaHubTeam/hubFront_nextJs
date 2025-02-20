@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
-import { ChapterCard } from "@/components/mangaAdminPage/ChapterCard"
+import { ChapterCard } from "@/components/mangaAdminPage/temp trash folder/ChapterCard"
 import { UpdateMangaModal } from "@/components/mangaAdminPage/modals/UpdateMangaModal"
 
 interface MangaDetailsModalProps {
