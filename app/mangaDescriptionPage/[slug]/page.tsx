@@ -174,7 +174,9 @@ export default function MangaPage() {
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Type</p>
-                      <p className="font-semibold">{getMangaTypeName(manga.type)}</p>
+                      <p className="font-semibold">
+                        {getMangaTypeName(manga.type)}
+                      </p>
                     </div>
 
                     <div>
@@ -194,10 +196,10 @@ export default function MangaPage() {
                       <div className="flex flex-wrap gap-2">
                         {manga.mangaGenres.map((genre) => (
                           <span
-                            key={genre}
+                            key={genre.id}
                             className="px-2 py-1 bg-gray-800 rounded-full text-xs text-gray-200"
                           >
-                            {genre}
+                            {genre.name}
                           </span>
                         ))}
                       </div>

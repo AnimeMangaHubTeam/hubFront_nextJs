@@ -1,9 +1,13 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  //https://localhost:7159
   baseURL: "https://tomodachi.mooo.com",
   timeout: 10000,
+  withCredentials: true, // Enable credentials for all requests
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
 
 let isRefreshing = false;
@@ -30,27 +34,28 @@ axiosInstance.interceptors.response.use(
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => {
-            return axiosInstance(originalRequest);
-          })
-          .catch((err) => {
-            return Promise.reject(err);
-          });
+          .then(() => axiosInstance(originalRequest))
+          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        await axiosInstance.post("/api/app/auth/refresh-token", null, {
-          withCredentials: true,
-          headers: { accept: "application/json" },
+        // Modified refresh token request to match curl
+        await axiosInstance.post("/api/app/auth/refresh-token", "", {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
         });
 
         processQueue(null);
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
+        // Log the error for debugging
+        console.error('Refresh token error:', (refreshError as any).response?.data);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

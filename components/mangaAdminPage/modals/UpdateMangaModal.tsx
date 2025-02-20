@@ -22,7 +22,7 @@ export function UpdateMangaModal({ manga, open, onOpenChange }: UpdateMangaModal
     if (cover && cover.size > 0) {
       const coverData = new FormData()
       coverData.append("cover", cover)
-      await uploadMangaCover(manga.id, coverData)
+      await uploadMangaCover(manga.id.toString(), coverData)
     }
 
     onOpenChange(false)

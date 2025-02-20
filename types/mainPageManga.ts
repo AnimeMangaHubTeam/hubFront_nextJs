@@ -27,18 +27,31 @@ export interface ApiResponse<T> {
 
 export interface MangaListResponse extends ApiResponse<Manga[]> {}
 
-export interface Translator {
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface Translator {
   translatorMangaTeamId: number;
   name: string;
   description: string | null;
   mainPhotoId: string | null;
 }
 
-export interface MangaDetails extends Manga {
+export interface MangaDetails {
+  title: string;
+  author: string;
+  description: string;
+  imageUrl: string;
+  type: number;
   publisher: string;
   artist: string;
-  chapters: any[]; // You might want to create a Chapter interface later
+  avgRating: number;
+  countRating: number;
+  chapters: any[]; // Update this type based on your actual chapters structure
   translators: Translator[];
+  mangaGenres: Genre[];
 }
 
 export interface MangaDetailsResponse extends ApiResponse<MangaDetails> {}
