@@ -71,7 +71,6 @@ export function UpdateChapterModal({ chapter, open, onOpenChange, onChapterUpdat
               required
             />
           </div>
-          <Button onClick={() => console.log(chapter.id)}>Click me</Button>
           <div className="space-y-2">
             <Label htmlFor="title" className="text-zinc-400">
               Title

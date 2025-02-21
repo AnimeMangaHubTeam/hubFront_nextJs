@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
+import { CreatePagesModal } from "@/components/mangaAdminPage/modals/CreatePagesModal"
 
 // You'll need to create these components
 import { CreateChapterModal } from "@/components/mangaAdminPage/modals/CreateChapterModal"
@@ -46,6 +47,7 @@ export default function ChapterViewPage() {
   const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showUpdateModal, setShowUpdateModal] = useState(false)
+  const [showCreatePagesModal, setShowCreatePagesModal] = useState(false)
   const [sortField, setSortField] = useState<keyof Chapter>("id")
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
   const pathName = usePathname();
@@ -175,17 +177,7 @@ export default function ChapterViewPage() {
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          // Implement view pages functionality
-                          console.log("View pages for chapter", chapter.id)
-                        }}
-                        className="hover:bg-zinc-800 text-zinc-400 hover:text-amber-500"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                      <CreatePagesModal open={showCreateModal} onOpenChange={setShowCreateModal} onChapterCreated={fetchChapters} mangaId={mangaId} chapterId={chapter.id} translatorId={2}/>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -226,6 +218,7 @@ export default function ChapterViewPage() {
         </div>
 
         <CreateChapterModal open={showCreateModal} onOpenChange={setShowCreateModal} onChapterCreated={fetchChapters} mangaId={mangaId} />
+        
 
         {selectedChapter && (
           <UpdateChapterModal
