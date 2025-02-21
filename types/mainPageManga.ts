@@ -5,7 +5,10 @@ export interface Manga {
   description: string;
   imageUrl: string;
   type: MangaType;
-  mangaGenres: { id: number; name: string }[];
+  mangaGenres: Array<{
+    id: number;
+    name: string;
+  }>;
   avgRating: number;
   countRating: number;
   publisher: string
@@ -51,9 +54,18 @@ export interface MangaDetails {
   artist: string;
   avgRating: number;
   countRating: number;
-  chapters: any[]; // Update this type based on your actual chapters structure
+  chapters: Chapter[]; // Update this type based on your actual chapters structure
   translators: Translator[];
   mangaGenres: Genre[];
+}
+
+interface Chapter {
+  chapterId: number;
+  mangaId: number;
+  chapterNumber: number;
+  translatorMangaTeamId: number;
+  title: string;
+  publicationDate: string;
 }
 
 export interface MangaDetailsResponse extends ApiResponse<MangaDetails> {}

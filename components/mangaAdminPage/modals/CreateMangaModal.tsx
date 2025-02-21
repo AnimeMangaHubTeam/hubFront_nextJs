@@ -88,93 +88,119 @@ export function CreateMangaModal() {
         <DialogHeader>
           <DialogTitle className="text-amber-500">Create New Manga</DialogTitle>
         </DialogHeader>
-        <form action={onSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-zinc-400">
-                Title
-              </Label>
-              <Input
-                id="title"
-                name="title"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                required
-              />
+        <div className="space-y-4">
+          <form action={onSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="title" className="text-zinc-400">
+                  Title
+                </Label>
+                <Input
+                  id="title"
+                  name="title"
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="author" className="text-zinc-400">
+                  Author
+                </Label>
+                <Input
+                  id="author"
+                  name="author"
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="artist" className="text-zinc-400">
+                  Artist
+                </Label>
+                <Input
+                  id="artist"
+                  name="artist"
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="publisher" className="text-zinc-400">
+                  Publisher
+                </Label>
+                <Input
+                  id="publisher"
+                  name="publisher"
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="type" className="text-zinc-400">
+                  Type
+                </Label>
+                <Select name="type" required>
+                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-100">
+                    {[...Array(10)].map((_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString()}>
+                        Type {i + 1}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="translatorMangaTeamId"
+                  className="text-zinc-400"
+                >
+                  Translator Team ID
+                </Label>
+                <Input
+                  id="translatorMangaTeamId"
+                  name="translatorMangaTeamId"
+                  className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                  required
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="author" className="text-zinc-400">
-                Author
-              </Label>
-              <Input
-                id="author"
-                name="author"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="artist" className="text-zinc-400">
-                Artist
-              </Label>
-              <Input
-                id="artist"
-                name="artist"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="publisher" className="text-zinc-400">
-                Publisher
-              </Label>
-              <Input
-                id="publisher"
-                name="publisher"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="type" className="text-zinc-400">
-                Type
-              </Label>
-              <Select name="type" required>
-                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-800 border-zinc-700 text-zinc-100">
-                  {[...Array(10)].map((_, i) => (
-                    <SelectItem key={i + 1} value={(i + 1).toString()}>
-                      Type {i + 1}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="translatorMangaTeamId" className="text-zinc-400">
-                Translator Team ID
-              </Label>
-              <Input
-                id="translatorMangaTeamId"
-                name="translatorMangaTeamId"
-                className="bg-zinc-800 border-zinc-700 text-zinc-100"
-                required
-              />
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-zinc-400">
-              Description
-            </Label>
-            <Textarea
-              id="description"
-              name="description"
-              className="bg-zinc-800 border-zinc-700 text-zinc-100"
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-zinc-400">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                name="description"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="file" className="text-zinc-400">
+                Cover Image
+              </Label>
+              <Input
+                id="file"
+                name="file"
+                type="file"
+                accept="image/*"
+                className="bg-zinc-800 border-zinc-700 text-zinc-100"
+                required
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="bg-amber-500 text-black hover:bg-amber-600"
+            >
+              Create
+            </Button>
+          </form>
 
           <div className="space-y-2">
             <GenreManager
@@ -182,28 +208,7 @@ export function CreateMangaModal() {
               initialSelectedGenres={[]}
             />
           </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="file" className="text-zinc-400">
-              Cover Image
-            </Label>
-            <Input
-              id="file"
-              name="file"
-              type="file"
-              accept="image/*"
-              className="bg-zinc-800 border-zinc-700 text-zinc-100"
-              required
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="bg-amber-500 text-black hover:bg-amber-600"
-          >
-            Create
-          </Button>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -12,7 +12,11 @@ import { MangaDetails, MangaDetailsResponse } from "@/types/mainPageManga";
 import { useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/contexts/AuthContext";
-import { getMangaTypeName, getMangaStatusName, getTranslationStatusName } from '@/utils/enumUtils';
+import {
+  getMangaTypeName,
+  getMangaStatusName,
+  getTranslationStatusName,
+} from "@/utils/enumUtils";
 
 import photo1 from "@/public/photo_2024-02-11_23-55-51.jpg";
 import photo2 from "@/public/photo_2024-04-24_21-12-15.jpg";
@@ -206,7 +210,7 @@ export default function MangaPage() {
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">Chapters</p>
-                      <p className="font-semibold">{manga.chapters}</p>
+                      <p className="font-semibold">{manga.chapters.length}</p>
                     </div>
                     <div>
                       <p className="text-gray-400 mb-1 text-sm">
@@ -268,25 +272,25 @@ export default function MangaPage() {
           </TabsList>
           <TabsContent value="chapters">
             <div className="flex justify-start gap-2 items-center">
-              <Button className="bg-stone-700 text-gray-300 hover:bg-stone-700 flex w-auto h-auto">
+              <Button className="bg-stone-700 text-gray-300 hover:bg-stone-700 flex items-center gap-2 p-2">
                 <Image
                   src={photo1}
-                  alt={manga.title}
-                  width={40}
-                  height={40}
+                  alt="Team 1"
+                  width={30}
+                  height={30}
                   draggable={false}
-                  className="rounded-sm shadow-lg sm:w-full h-auto object-cover w-1/2"
+                  className="rounded-sm object-cover"
                 />
                 Team1
               </Button>
-              <Button className="bg-stone-800 text-gray-300 hover:bg-stone-700 flex w-auto h-auto">
+              <Button className="bg-stone-800 text-gray-300 hover:bg-stone-700 flex items-center gap-2 p-2">
                 <Image
                   src={photo2}
-                  alt={manga.title}
-                  width={40}
-                  height={40}
+                  alt="Team 2"
+                  width={30}
+                  height={30}
                   draggable={false}
-                  className="rounded-sm shadow-lg sm:w-full h-auto object-cover w-1/2"
+                  className="rounded-sm object-cover"
                 />
                 Team2
               </Button>
@@ -295,27 +299,36 @@ export default function MangaPage() {
               <CardContent className="p-4">
                 <ScrollArea className="h-[400px] pr-4">
                   <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4">
-                    {[...Array(manga.chapters)].map((_, index) => (
-                      <Button
-                        key={index + 1}
-                        variant={
-                          selectedChapter === index + 1 ? "default" : "default"
-                        }
-                        className={`h-16 ${
-                          selectedChapter === index + 1
-                            ? "bg-black text-gray-500 hover:bg-zinc-900"
-                            : "bg-stone-800 text-gray-300 hover:bg-stone-700"
-                        } flex flex-col items-start justify-center p-4`}
-                        onClick={() => setSelectedChapter(index + 1)}
-                      >
-                        <span className="text-lg font-semibold">
-                          Chapter {index + 1}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          Last update: 11.11.2011
-                        </span>
-                      </Button>
-                    ))}
+                    <Button onClick={() => console.log(manga)}>test</Button>
+                    {manga.chapters &&
+                      manga.chapters.map((chapter) => (
+                        <Button
+                          key={chapter.chapterId}
+                          variant={
+                            selectedChapter === chapter.chapterNumber
+                              ? "default"
+                              : "default"
+                          }
+                          className={`h-16 ${
+                            selectedChapter === chapter.chapterNumber
+                              ? "bg-black text-gray-500 hover:bg-zinc-900"
+                              : "bg-stone-800 text-gray-300 hover:bg-stone-700"
+                          } flex flex-col items-start justify-center p-4`}
+                          onClick={() =>
+                            setSelectedChapter(chapter.chapterNumber)
+                          }
+                        >
+                          <span className="text-lg font-semibold">
+                            Chapter {chapter.chapterNumber}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            Last update:{" "}
+                            {new Date(
+                              chapter.publicationDate
+                            ).toLocaleDateString()}
+                          </span>
+                        </Button>
+                      ))}
                   </div>
                 </ScrollArea>
               </CardContent>

@@ -183,7 +183,7 @@ export default function MangaAdminPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-zinc-300">
-                    {manga.mangaGenres.join(", ")}
+                    {manga.mangaGenres.map((genre) => genre.name).join(", ")}
                   </TableCell>
                   <TableCell className="text-zinc-300">{manga.type}</TableCell>
                   <TableCell className="text-right">
