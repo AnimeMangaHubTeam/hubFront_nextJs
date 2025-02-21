@@ -42,14 +42,16 @@ export default function MangaPreviewComponent({ manga }: MangaPreviewProps) {
             <span className="text-sm font-medium">{manga.avgRating.toFixed(1)}</span>
           </div>
           <div className="mb-2 flex flex-wrap gap-2">
+            <Button onClick={() => {console.log(manga)}}>testMe</Button>
             {manga.mangaGenres.map((genre) => (
               <Badge
-                key={genre}
+                key={genre.id}
                 variant="secondary"
                 className="bg-white/20 text-xs font-medium text-white"
               >
-                {genre}
+                {genre.name}
               </Badge>
+              
             ))}
           </div>
           <p className="mb-4 text-sm line-clamp-3">{manga.description}</p>

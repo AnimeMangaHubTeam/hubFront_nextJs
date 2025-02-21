@@ -5,9 +5,14 @@ export interface Manga {
   description: string;
   imageUrl: string;
   type: MangaType;
-  mangaGenres: string[];
+  mangaGenres: Array<{
+    id: number;
+    name: string;
+  }>;
   avgRating: number;
   countRating: number;
+  publisher: string
+  artist: string
 }
 
 export enum MangaType {
@@ -27,18 +32,40 @@ export interface ApiResponse<T> {
 
 export interface MangaListResponse extends ApiResponse<Manga[]> {}
 
-export interface Translator {
+interface Genre {
+  id: number;
+  name: string;
+}
+
+interface Translator {
   translatorMangaTeamId: number;
   name: string;
   description: string | null;
   mainPhotoId: string | null;
 }
 
-export interface MangaDetails extends Manga {
+export interface MangaDetails {
+  title: string;
+  author: string;
+  description: string;
+  imageUrl: string;
+  type: number;
   publisher: string;
   artist: string;
-  chapters: any[]; // You might want to create a Chapter interface later
+  avgRating: number;
+  countRating: number;
+  chapters: Chapter[]; // Update this type based on your actual chapters structure
   translators: Translator[];
+  mangaGenres: Genre[];
+}
+
+interface Chapter {
+  chapterId: number;
+  mangaId: number;
+  chapterNumber: number;
+  translatorMangaTeamId: number;
+  title: string;
+  publicationDate: string;
 }
 
 export interface MangaDetailsResponse extends ApiResponse<MangaDetails> {}

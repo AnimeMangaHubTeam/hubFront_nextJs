@@ -1,19 +1,19 @@
 export interface Manga {
-    id: string
+    id: number
     title: string
-    coverUrl?: string
+    imageUrl?: string
   }
   
   export interface Chapter {
-    id: string
+    id: number
     mangaId: string
     chapterNumber: number
     title: string
   }
   
   export interface Page {
-    id: string
-    chapterId: string
+    id: number
+    chapterId: number
     pageNumber: number
     imageUrl: string
   }

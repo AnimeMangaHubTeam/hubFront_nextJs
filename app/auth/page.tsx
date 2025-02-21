@@ -1,17 +1,21 @@
-'use client';
+"use client";
 
 import SignIn from "@/components/auth/signIn";
 import SignUp from "@/components/auth/signUp";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function AuthContent() {
+  const searchParams = useSearchParams();
+  return (
+    <div>{searchParams.get("page") === "signIn" ? <SignIn /> : <SignUp />}</div>
+  );
+}
 
 export default function Page() {
-
-    const AuthPageParams = useSearchParams();
-
-    return (
-        <div>
-            {AuthPageParams.get("page") === "signIn" ? <SignIn /> : <SignUp />}
-            <button onClick={() => AuthPageParams.set()}> test </button>
-        </div>
-);
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthContent />
+    </Suspense>
+  );
 }
