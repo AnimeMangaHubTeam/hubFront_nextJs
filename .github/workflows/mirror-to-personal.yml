@@ -22,4 +22,4 @@ jobs:
       - name: Mirror to Personal Repo
         run: |
           git remote add personal "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/ripper-jc/tomodachi-hub.git"
-          git push personal development:main --force
+          git push personal Develop:main --force
