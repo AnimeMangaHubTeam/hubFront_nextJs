@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
         pathname: "/cdn-cgi/image/**",
       }
     ],
-    unoptimized: true // Add this to disable image optimization if needed
+    //unoptimized: true // Add this to disable image optimization if needed
   },
   eslint: {
     ignoreDuringBuilds: true,// Add this to disable eslint during builds
