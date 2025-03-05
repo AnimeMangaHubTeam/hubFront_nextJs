@@ -3,7 +3,7 @@ name: Mirror Organization Dev to Personal Main
 on:
   push:
     branches:
-      - Develop
+      - Develop1
 
 jobs:
   mirror:
