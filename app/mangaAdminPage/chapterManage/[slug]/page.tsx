@@ -1,10 +1,17 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useCallback } from "react"
-import axiosInstance from "@/lib/axios"
-import { Button } from "@/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Pencil, Trash, Eye, ChevronUp, ChevronDown, Plus } from "lucide-react"
+import { useState, useEffect, useCallback } from "react";
+import axiosInstance from "@/lib/axios";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pencil, Trash, Eye, ChevronUp, ChevronDown, Plus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,56 +22,58 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Badge } from "@/components/ui/badge"
-import { CreatePagesModal } from "@/components/mangaAdminPage/modals/CreatePagesModal"
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { CreatePagesModal } from "@/components/mangaAdminPage/modals/CreatePagesModal";
 
 // You'll need to create these components
-import { CreateChapterModal } from "@/components/mangaAdminPage/modals/CreateChapterModal"
-import { UpdateChapterModal } from "@/components/mangaAdminPage/modals/UpdateChapterModal"
-import { usePathname } from "next/navigation"
-
+import { CreateChapterModal } from "@/components/mangaAdminPage/modals/CreateChapterModal";
+import { UpdateChapterModal } from "@/components/mangaAdminPage/modals/UpdateChapterModal";
+import { usePathname } from "next/navigation";
 
 interface Chapter {
-  id: number
-  mangaId: number
-  chapterNumber: number
-  translatorMangaTeamId: number
-  title: string
-  publicationDate: Date
+  id: number;
+  mangaId: number;
+  chapterNumber: number;
+  translatorMangaTeamId: number;
+  title: string;
+  publicationDate: Date;
 }
 
 interface ChapterListResponse {
-  value: Chapter[]
-  totalCount: number
+  value: Chapter[];
+  totalCount: number;
 }
 
 export default function ChapterViewPage() {
-  const [chapters, setChapters] = useState<Chapter[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-  const [totalPages, setTotalPages] = useState(1)
-  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [showUpdateModal, setShowUpdateModal] = useState(false)
-  const [showCreatePagesModal, setShowCreatePagesModal] = useState(false)
-  const [sortField, setSortField] = useState<keyof Chapter>("id")
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
+  const [chapters, setChapters] = useState<Chapter[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedChapter, setSelectedChapter] = useState<Chapter | null>(null);
+  const [showCreateChapterModal, setShowCreateChapterModal] = useState(false);
+  const [showCreatePagesModal, setShowCreatePagesModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [sortField, setSortField] = useState<keyof Chapter>("id");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const pathName = usePathname();
-  const mangaId = Number(pathName.split('/').filter(Boolean).pop());
+  const mangaId = Number(pathName.split("/").filter(Boolean).pop());
   const translatorMangaTeamId = "2";
-    //to do something with translators
+  //to do something with translators
   const deleteChapter = async (chapterId: string) => {
     try {
-        await axiosInstance.delete(`api/translators/mangas/chapters/${chapterId}`, {
-            headers: { "Content-Type": "application/json" },
-            withCredentials: true,
-        })
-        fetchChapters()
-        } catch (error) {
-        console.error("Error deleting chapter:", error)
+      await axiosInstance.delete(
+        `api/translators/mangas/chapters/${chapterId}`,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      fetchChapters();
+    } catch (error) {
+      console.error("Error deleting chapter:", error);
     }
-    }
+  };
 
   const fetchChapters = useCallback(async () => {
     try {
@@ -73,58 +82,58 @@ export default function ChapterViewPage() {
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
-        },
-      )
-      setChapters(response.data.value)
-      console.log("chapters", response.data.value)
+        }
+      );
+      setChapters(response.data.value);
+      console.log("chapters", response.data.value);
     } catch (error) {
-      console.error("Error fetching chapters:", error)
+      console.error("Error fetching chapters:", error);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchChapters()
-  }, [fetchChapters])
+    fetchChapters();
+  }, [fetchChapters]);
 
   const handleSort = (field: keyof Chapter) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField(field)
-      setSortDirection("asc")
+      setSortField(field);
+      setSortDirection("asc");
     }
-  }
+  };
 
   const sortedChapters = [...chapters].sort((a, b) => {
     if (sortDirection === "asc") {
-      return a[sortField] > b[sortField] ? 1 : -1
+      return a[sortField] > b[sortField] ? 1 : -1;
     }
-    return a[sortField] < b[sortField] ? 1 : -1
-  })
+    return a[sortField] < b[sortField] ? 1 : -1;
+  });
 
   const SortIcon = ({ field }: { field: keyof Chapter }) => {
-    if (sortField !== field) return null
-    return sortDirection === "asc" ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-  }
+    if (sortField !== field) return null;
+    return sortDirection === "asc" ? (
+      <ChevronUp className="w-4 h-4" />
+    ) : (
+      <ChevronDown className="w-4 h-4" />
+    );
+  };
 
   return (
     <div className="min-h-screen bg-black">
       <div className="container mx-auto py-6 mt-20">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-amber-500">Chapter List</h1>
-          <Button onClick={() => setShowCreateModal(true)} className="bg-amber-500 hover:bg-amber-600 text-black">
+          <Button
+            onClick={() => setShowCreateChapterModal(true)}
+            className="bg-amber-500 hover:bg-amber-600 text-black"
+          >
             <Plus className="w-4 h-4 mr-2" /> Create Chapter
           </Button>
         </div>
-        
-        
-        
-        
-        
+
         {/* <Button onClick={() => {console.log(mangaId)}}>testMe</Button> */}
-
-
-
 
         <div className="rounded-md border border-zinc-800 bg-zinc-900/50">
           <Table>
@@ -148,14 +157,21 @@ export default function ChapterViewPage() {
                 >
                   status <SortIcon field="chapterNumber" />
                 </TableHead>
-                <TableHead className="text-right text-zinc-400">Actions</TableHead>
+                <TableHead className="text-right text-zinc-400">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedChapters.map((chapter) => (
-                <TableRow key={chapter.id} className="border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                <TableRow
+                  key={chapter.id}
+                  className="border-zinc-800 hover:bg-zinc-800/50 transition-colors"
+                >
                   <TableCell className="text-zinc-400">{chapter.id}</TableCell>
-                  <TableCell className="font-medium text-zinc-100">{chapter.title}</TableCell>
+                  <TableCell className="font-medium text-zinc-100">
+                    {chapter.title}
+                  </TableCell>
                   <TableCell>
                     {/* <Badge
                       variant={chapter.status === "published" ? "default" : "secondary"}
@@ -170,14 +186,21 @@ export default function ChapterViewPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          setSelectedChapter(chapter)
-                          setShowUpdateModal(true)
+                          setSelectedChapter(chapter);
+                          setShowUpdateModal(true);
                         }}
                         className="hover:bg-zinc-800 text-zinc-400 hover:text-amber-500"
                       >
                         <Pencil className="w-4 h-4" />
                       </Button>
-                      <CreatePagesModal open={showCreateModal} onOpenChange={setShowCreateModal} onChapterCreated={fetchChapters} mangaId={mangaId} chapterId={chapter.id} translatorId={2}/>
+                      <CreatePagesModal
+                        open={showCreatePagesModal}
+                        onOpenChange={setShowCreatePagesModal}
+                        onChapterCreated={fetchChapters}
+                        mangaId={mangaId}
+                        chapterId={chapter.id}
+                        translatorId={2}
+                      />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
@@ -190,10 +213,13 @@ export default function ChapterViewPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent className="bg-zinc-900 border-zinc-800">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-zinc-100">Delete Chapter</AlertDialogTitle>
+                            <AlertDialogTitle className="text-zinc-100">
+                              Delete Chapter
+                            </AlertDialogTitle>
                             <AlertDialogDescription className="text-zinc-400">
-                              Are you sure you want to delete Chapter {chapter.id}: {chapter.title}? This action
-                              cannot be undone.
+                              Are you sure you want to delete Chapter{" "}
+                              {chapter.id}: {chapter.title}? This action cannot
+                              be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -201,7 +227,9 @@ export default function ChapterViewPage() {
                               Cancel
                             </AlertDialogCancel>
                             <AlertDialogAction
-                              onClick={() => deleteChapter(chapter.id.toString())}
+                              onClick={() =>
+                                deleteChapter(chapter.id.toString())
+                              }
                               className="bg-red-500 text-white hover:bg-red-600"
                             >
                               Delete
@@ -217,8 +245,12 @@ export default function ChapterViewPage() {
           </Table>
         </div>
 
-        <CreateChapterModal open={showCreateModal} onOpenChange={setShowCreateModal} onChapterCreated={fetchChapters} mangaId={mangaId} />
-        
+        <CreateChapterModal
+          open={showCreateChapterModal}
+          onOpenChange={setShowCreateChapterModal}
+          onChapterCreated={fetchChapters}
+          mangaId={mangaId}
+        />
 
         {selectedChapter && (
           <UpdateChapterModal
@@ -230,6 +262,5 @@ export default function ChapterViewPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
-
