@@ -7,6 +7,7 @@ import type { Manga, MangaListResponse } from "@/types/mainPageManga";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useDataCache } from "@/contexts/DataCacheContext";
 import {
   Table,
   TableBody,
@@ -47,9 +48,21 @@ export default function MangaAdminPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [sortField, setSortField] = useState<keyof Manga>("title");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const { getCachedData, setCachedData } = useDataCache();
 
   const fetchMangas = useCallback(async () => {
     try {
+      // For admin pages, we can still use cache but with shorter expiry
+      // or invalidate cache after CRUD operations
+      const cacheKey = `admin-mangas-page-${currentPage}-size-${pageSize}`;
+      const cachedData = getCachedData(cacheKey);
+
+      if (cachedData) {
+        console.log("Using cached manga admin data");
+        setMangas(cachedData);
+        return;
+      }
+
       const response = await axiosInstance.get<MangaListResponse>(
         `api/app/mangas?IsNew=true&IsUpdated=false&IsPopular=false&CurrentPage=${currentPage}&PageSize=${pageSize}`,
         {
@@ -58,10 +71,12 @@ export default function MangaAdminPage() {
         }
       );
       setMangas(response.data.value);
+      // Cache the admin manga list
+      setCachedData(cacheKey, response.data.value);
     } catch (error) {
       console.error("Error fetching mangas:", error);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, getCachedData, setCachedData]);
 
   useEffect(() => {
     fetchMangas();
@@ -139,7 +154,12 @@ export default function MangaAdminPage() {
           <Table>
             <TableHeader>
               <TableRow className="border-zinc-800 hover:bg-zinc-900">
-                <TableHead className="w-[80px] text-zinc-400">ID</TableHead>
+                <TableHead
+                  className="cursor-pointer text-zinc-400 hover:text-amber-500"
+                  onClick={() => handleSort("id")}
+                >
+                  ID <SortIcon field="id" />
+                </TableHead>
                 <TableHead
                   className="cursor-pointer text-zinc-400 hover:text-amber-500"
                   onClick={() => handleSort("title")}

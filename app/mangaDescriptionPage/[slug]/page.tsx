@@ -6,20 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Star, BookMarked } from "lucide-react";
+import { BookOpen, Star, BookMarked, User } from "lucide-react";
 import Link from "next/link";
 import { MangaDetails, MangaDetailsResponse } from "@/types/mainPageManga";
 import { useParams } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDataCache } from "@/contexts/DataCacheContext";
 import {
   getMangaTypeName,
   getMangaStatusName,
   getTranslationStatusName,
 } from "@/utils/enumUtils";
-
-import photo1 from "@/public/photo_2024-02-11_23-55-51.jpg";
-import photo2 from "@/public/photo_2024-04-24_21-12-15.jpg";
 
 export default function MangaPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,19 +25,49 @@ export default function MangaPage() {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedTranslator, setSelectedTranslator] = useState<number | null>(
+    null
+  );
   const params = useParams();
   const mangaId = params.slug; // This will get "17" from the URL
   const [manga, setManga] = useState<MangaDetails | null>(null);
   const { auth, setAuth } = useAuth();
+  const { getCachedData, setCachedData } = useDataCache();
 
   useEffect(() => {
     const fetchMangaData = async () => {
       try {
+        const cacheKey = `manga-details-${mangaId}`;
+        const cachedManga = getCachedData(cacheKey);
+
+        if (cachedManga) {
+          console.log("Using cached manga details");
+          setManga(cachedManga);
+          // Set the first translator as selected by default
+          if (cachedManga.translators && cachedManga.translators.length > 0) {
+            setSelectedTranslator(
+              cachedManga.translators[0].translatorMangaTeamId
+            );
+          }
+          return;
+        }
+
         const response = await axiosInstance.get<MangaDetailsResponse>(
           `/api/app/mangas/${mangaId}`
         );
         if (response.data.success) {
           setManga(response.data.value);
+          // Set the first translator as selected by default
+          if (
+            response.data.value.translators &&
+            response.data.value.translators.length > 0
+          ) {
+            setSelectedTranslator(
+              response.data.value.translators[0].translatorMangaTeamId
+            );
+          }
+          // Cache the manga details
+          setCachedData(cacheKey, response.data.value);
         }
       } catch (error) {
         console.error("Failed to fetch manga:", error);
@@ -49,7 +77,22 @@ export default function MangaPage() {
     if (mangaId) {
       fetchMangaData();
     }
-  }, [mangaId]);
+  }, [mangaId, getCachedData, setCachedData]);
+
+  // Filter chapters based on selected translator
+  const filteredChapters =
+    manga?.chapters.filter(
+      (chapter) => chapter.translatorMangaTeamId === selectedTranslator
+    ) || [];
+
+  // Get the selected translator name
+  const getSelectedTranslatorName = () => {
+    if (!manga || !selectedTranslator) return "";
+    const translator = manga.translators.find(
+      (t) => t.translatorMangaTeamId === selectedTranslator
+    );
+    return translator ? translator.name : "";
+  };
 
   if (!manga) {
     return <div>Loading...</div>;
@@ -83,6 +126,10 @@ export default function MangaPage() {
     } else {
       alert("Please log in to rate this manga.");
     }
+  };
+
+  const handleTranslatorSelect = (translatorId: number) => {
+    setSelectedTranslator(translatorId);
   };
 
   return (
@@ -272,63 +319,81 @@ export default function MangaPage() {
           </TabsList>
           <TabsContent value="chapters">
             <div className="flex justify-start gap-2 items-center">
-              <Button className="bg-stone-700 text-gray-300 hover:bg-stone-700 flex items-center gap-2 p-2">
-                <Image
-                  src={photo1}
-                  alt="Team 1"
-                  width={30}
-                  height={30}
-                  draggable={false}
-                  className="rounded-sm object-cover"
-                />
-                Team1
-              </Button>
-              <Button className="bg-stone-800 text-gray-300 hover:bg-stone-700 flex items-center gap-2 p-2">
-                <Image
-                  src={photo2}
-                  alt="Team 2"
-                  width={30}
-                  height={30}
-                  draggable={false}
-                  className="rounded-sm object-cover"
-                />
-                Team2
-              </Button>
+              {manga.translators.map((translator) => (
+                <Button
+                  key={translator.translatorMangaTeamId}
+                  className={`${
+                    selectedTranslator === translator.translatorMangaTeamId
+                      ? "bg-stone-700"
+                      : "bg-stone-800"
+                  } text-gray-300 hover:bg-stone-700 flex items-center gap-2 p-2`}
+                  onClick={() =>
+                    handleTranslatorSelect(translator.translatorMangaTeamId)
+                  }
+                >
+                  {translator.mainPhotoId ? (
+                    <Image
+                      src={translator.mainPhotoId}
+                      alt={translator.name}
+                      width={30}
+                      height={30}
+                      draggable={false}
+                      className="rounded-sm object-cover"
+                    />
+                  ) : (
+                    <User className="w-6 h-6" />
+                  )}
+                  {translator.name}
+                </Button>
+              ))}
             </div>
             <Card className="bg-stone-900 border-stone-900 mt-6">
               <CardContent className="p-4">
                 <ScrollArea className="h-[400px] pr-4">
                   <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-4">
-                    <Button onClick={() => console.log(manga)}>test</Button>
-                    {manga.chapters &&
-                      manga.chapters.map((chapter) => (
-                        <Button
-                          key={chapter.chapterId}
-                          variant={
-                            selectedChapter === chapter.chapterNumber
-                              ? "default"
-                              : "default"
-                          }
-                          className={`h-16 ${
-                            selectedChapter === chapter.chapterNumber
-                              ? "bg-black text-gray-500 hover:bg-zinc-900"
-                              : "bg-stone-800 text-gray-300 hover:bg-stone-700"
-                          } flex flex-col items-start justify-center p-4`}
-                          onClick={() =>
-                            setSelectedChapter(chapter.chapterNumber)
-                          }
-                        >
-                          <span className="text-lg font-semibold">
-                            Chapter {chapter.chapterNumber}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            Last update:{" "}
-                            {new Date(
-                              chapter.publicationDate
-                            ).toLocaleDateString()}
-                          </span>
-                        </Button>
-                      ))}
+                    {selectedTranslator ? (
+                      filteredChapters.length > 0 ? (
+                        filteredChapters.map((chapter) => (
+                          <Link
+                            key={chapter.chapterId}
+                            href={`/mangaReadingPage/${manga.title}?chapterId=${chapter.chapterId}&mangaId=${chapter.mangaId}`}
+                            className="w-full"
+                          >
+                            <Button
+                              variant={
+                                selectedChapter === chapter.chapterNumber
+                                  ? "default"
+                                  : "default"
+                              }
+                              className={`h-16 w-full ${
+                                selectedChapter === chapter.chapterNumber
+                                  ? "bg-black text-gray-500 hover:bg-zinc-900"
+                                  : "bg-stone-800 text-gray-300 hover:bg-stone-700"
+                              } flex flex-col items-start justify-center p-4`}
+                            >
+                              <span className="text-lg font-semibold">
+                                Chapter {chapter.chapterNumber}
+                                {chapter.title && ` - ${chapter.title}`}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                Last update:{" "}
+                                {new Date(
+                                  chapter.publicationDate
+                                ).toLocaleDateString()}
+                              </span>
+                            </Button>
+                          </Link>
+                        ))
+                      ) : (
+                        <div className="text-center py-4 text-gray-400">
+                          No chapters available from this translator.
+                        </div>
+                      )
+                    ) : (
+                      <div className="text-center py-4 text-gray-400">
+                        Select a translator team to view chapters.
+                      </div>
+                    )}
                   </div>
                 </ScrollArea>
               </CardContent>

@@ -1,16 +1,23 @@
-"use server"
+"use server";
 
-import type { MangaPage } from "@/components/mangaReadingPage/types/reader"
+import type {
+  MangaPage,
+  MangaPagesResponse,
+} from "@/components/mangaReadingPage/types/reader";
+import axiosInstance from "@/lib/axios";
 
 export async function getMangaPages(chapterId: number): Promise<MangaPage[]> {
-  // Simulated API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
+  try {
+    const response = await axiosInstance.get<MangaPagesResponse>(
+      `/api/app/mangas/translator-manga-teams/chapters/${chapterId}/pages`
+    );
 
-  // Mock data - in real app this would come from your API
-  return Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    url: `/placeholder.svg?height=1200&width=800`,
-    pageNumber: i + 1,
-  }))
+    if (response.data.success) {
+      return response.data.value;
+    }
+    return [];
+  } catch (error) {
+    console.error("Failed to fetch manga pages:", error);
+    return [];
+  }
 }
-

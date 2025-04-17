@@ -6,27 +6,43 @@ import { Button } from "@/components/ui/button";
 import axiosInstance from "@/lib/axios";
 import { useState, useEffect } from "react";
 import { Manga, MangaListResponse } from "@/types/mainPageManga";
-import { MangaSliderSkeleton } from "@/components/mangaSkeleton"
+import { MangaSliderSkeleton } from "@/components/mangaSkeleton";
 import Image from "next/image";
-
+import { useDataCache } from "@/contexts/DataCacheContext";
 
 export default function Home() {
   const [newMangas, setNewMangas] = useState<Manga[]>([]);
   const [updatedMangas, setUpdatedMangas] = useState<Manga[]>([]);
   const [popularMangas, setPopularMangas] = useState<Manga[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const { getCachedData, setCachedData } = useDataCache();
 
   useEffect(() => {
     const fetchMangas = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=true&IsUpdated=false&IsPopular=false&CurrentPage=1&PageSize=10", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        // Check cache first
+        const cacheKey = "new-mangas";
+        const cachedData = getCachedData(cacheKey);
+
+        if (cachedData) {
+          console.log("Using cached new mangas data");
+          setNewMangas(cachedData);
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await axiosInstance.get<MangaListResponse>(
+          "api/app/mangas?IsNew=true&IsUpdated=false&IsPopular=false&CurrentPage=1&PageSize=10",
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
         console.log("ok", response.data.value);
         setNewMangas(response.data.value);
+        // Cache the result
+        setCachedData(cacheKey, response.data.value);
       } catch (error: any) {
         if (error.response) {
           console.log("Error status:", error.response.status);
@@ -34,23 +50,37 @@ export default function Home() {
         } else {
           console.log("Error:", error.message);
         }
-      } finally{
+      } finally {
         setIsLoading(false);
       }
     };
     fetchMangas();
-    
   }, []);
 
   useEffect(() => {
     const fetchMangas = async () => {
       try {
-        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=false&IsUpdated=true&IsPopular=false&CurrentPage=1&PageSize=10", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        // Check cache first
+        const cacheKey = "updated-mangas";
+        const cachedData = getCachedData(cacheKey);
+
+        if (cachedData) {
+          console.log("Using cached updated mangas data");
+          setUpdatedMangas(cachedData);
+          return;
+        }
+
+        const response = await axiosInstance.get<MangaListResponse>(
+          "api/app/mangas?IsNew=false&IsUpdated=true&IsPopular=false&CurrentPage=1&PageSize=10",
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
         console.log("ok", response.data.value);
         setUpdatedMangas(response.data.value);
+        // Cache the result
+        setCachedData(cacheKey, response.data.value);
       } catch (error: any) {
         if (error.response) {
           console.log("Error status:", error.response.status);
@@ -66,12 +96,27 @@ export default function Home() {
   useEffect(() => {
     const fetchMangas = async () => {
       try {
-        const response = await axiosInstance.get<MangaListResponse>("api/app/mangas?IsNew=false&IsUpdated=false&IsPopular=true&CurrentPage=1&PageSize=10", {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        });
+        // Check cache first
+        const cacheKey = "popular-mangas";
+        const cachedData = getCachedData(cacheKey);
+
+        if (cachedData) {
+          console.log("Using cached popular mangas data");
+          setPopularMangas(cachedData);
+          return;
+        }
+
+        const response = await axiosInstance.get<MangaListResponse>(
+          "api/app/mangas?IsNew=false&IsUpdated=false&IsPopular=true&CurrentPage=1&PageSize=10",
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+          }
+        );
         console.log("ok", response.data.value);
         setPopularMangas(response.data.value);
+        // Cache the result
+        setCachedData(cacheKey, response.data.value);
       } catch (error: any) {
         if (error.response) {
           console.log("Error status:", error.response.status);
@@ -83,8 +128,6 @@ export default function Home() {
     };
     fetchMangas();
   }, []);
-
-
 
   const test = async (): Promise<void> => {
     try {
@@ -127,43 +170,42 @@ export default function Home() {
           </>
         )}
       </div>
-        oh, again
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellat, quos
-      molestiae officiis nisi voluptatibus odit consectetur doloribus reiciendis
-      iusto iure iste suscipit cum nesciunt alias tempora aperiam porro ullam
-      neque deleniti perferendis maiores, voluptatum sunt est commodi!
-      Blanditiis aperiam rerum, itaque repellendus vitae excepturi in cum
-      corporis nesciunt non expedita quasi iusto nostrum? Vero quidem dolores
-      repellendus, ipsam velit quis accusantium. Aut eveniet eligendi veniam,
-      temporibus provident est culpa. Voluptate inventore omnis architecto quae
-      ullam dolore necessitatibus nihil voluptates dolorum cum nemo aliquam
-      sapiente incidunt, sint dolores ab minima fuga atque eum! Sunt sed et
-      maxime error labore! Natus modi soluta, ipsa incidunt ut mollitia dolor
-      accusantium molestiae suscipit harum nisi magni odit libero atque. Labore
-      nihil odio quaerat amet tenetur eveniet eos dolorem nulla provident quo
-      consectetur ab vero reprehenderit reiciendis eum iusto nemo quam illo
-      accusamus ad necessitatibus, aliquam facere assumenda illum. Possimus
-      animi corrupti, corporis odit iste culpa quo nesciunt voluptas sint
-      provident aliquid, perferendis quas labore placeat magnam, est aperiam!
-      Culpa quae, unde sit maiores aut accusantium modi atque architecto
-      veritatis dolores. Quibusdam ad iste aut repudiandae consequuntur est
-      nihil voluptas, deleniti officiis dolores iusto sed tempora, ullam
-      blanditiis facilis recusandae suscipit consectetur deserunt doloremque ex?
-      Pariatur soluta accusamus velit totam similique iusto, fugit architecto
-      accusantium quam a voluptas eius quasi beatae excepturi culpa dolorem
-      reprehenderit sequi adipisci laborum animi est! Saepe, dolores ut!
-      Deserunt nobis rem nesciunt omnis molestiae illum inventore temporibus
-      nostrum corrupti, blanditiis doloremque, reprehenderit vero totam hic
-      ullam tempore neque cupiditate eum doloribus ducimus. Nihil magni
-      voluptate natus consequatur voluptas! Excepturi atque sunt iste dicta
-      fugit! Minima nam a repudiandae quaerat quae, voluptatem atque quasi sed,
-      natus ut asperiores totam laboriosam ipsa repellendus accusantium, vel
-      harum! Iure cumque quidem, modi amet ratione et nisi consectetur aliquam
-      tenetur cupiditate ipsum voluptas deserunt delectus molestiae ullam
-      debitis inventore numquam corrupti impedit itaque nemo error quia! Sunt
-      est quam tenetur blanditiis! Voluptatem, deserunt veritatis. Veniam vel,
-      dicta tenetur quia corporis nesciunt sit illo exercitationem quis eaque!
-      Tenetur optio adipisci quod. Suscipit natus est, inventore beatae,
+      oh, again Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      Repellat, quos molestiae officiis nisi voluptatibus odit consectetur
+      doloribus reiciendis iusto iure iste suscipit cum nesciunt alias tempora
+      aperiam porro ullam neque deleniti perferendis maiores, voluptatum sunt
+      est commodi! Blanditiis aperiam rerum, itaque repellendus vitae excepturi
+      in cum corporis nesciunt non expedita quasi iusto nostrum? Vero quidem
+      dolores repellendus, ipsam velit quis accusantium. Aut eveniet eligendi
+      veniam, temporibus provident est culpa. Voluptate inventore omnis
+      architecto quae ullam dolore necessitatibus nihil voluptates dolorum cum
+      nemo aliquam sapiente incidunt, sint dolores ab minima fuga atque eum!
+      Sunt sed et maxime error labore! Natus modi soluta, ipsa incidunt ut
+      mollitia dolor accusantium molestiae suscipit harum nisi magni odit libero
+      atque. Labore nihil odio quaerat amet tenetur eveniet eos dolorem nulla
+      provident quo consectetur ab vero reprehenderit reiciendis eum iusto nemo
+      quam illo accusamus ad necessitatibus, aliquam facere assumenda illum.
+      Possimus animi corrupti, corporis odit iste culpa quo nesciunt voluptas
+      sint provident aliquid, perferendis quas labore placeat magnam, est
+      aperiam! Culpa quae, unde sit maiores aut accusantium modi atque
+      architecto veritatis dolores. Quibusdam ad iste aut repudiandae
+      consequuntur est nihil voluptas, deleniti officiis dolores iusto sed
+      tempora, ullam blanditiis facilis recusandae suscipit consectetur deserunt
+      doloremque ex? Pariatur soluta accusamus velit totam similique iusto,
+      fugit architecto accusantium quam a voluptas eius quasi beatae excepturi
+      culpa dolorem reprehenderit sequi adipisci laborum animi est! Saepe,
+      dolores ut! Deserunt nobis rem nesciunt omnis molestiae illum inventore
+      temporibus nostrum corrupti, blanditiis doloremque, reprehenderit vero
+      totam hic ullam tempore neque cupiditate eum doloribus ducimus. Nihil
+      magni voluptate natus consequatur voluptas! Excepturi atque sunt iste
+      dicta fugit! Minima nam a repudiandae quaerat quae, voluptatem atque quasi
+      sed, natus ut asperiores totam laboriosam ipsa repellendus accusantium,
+      vel harum! Iure cumque quidem, modi amet ratione et nisi consectetur
+      aliquam tenetur cupiditate ipsum voluptas deserunt delectus molestiae
+      ullam debitis inventore numquam corrupti impedit itaque nemo error quia!
+      Sunt est quam tenetur blanditiis! Voluptatem, deserunt veritatis. Veniam
+      vel, dicta tenetur quia corporis nesciunt sit illo exercitationem quis
+      eaque! Tenetur optio adipisci quod. Suscipit natus est, inventore beatae,
       quibusdam ducimus quisquam iste, ab nostrum laudantium deserunt? Dolor
       dignissimos nobis facilis! Ipsa, quis tenetur illum voluptate maiores,
       vero reprehenderit nemo quos perspiciatis aliquid, placeat dignissimos?

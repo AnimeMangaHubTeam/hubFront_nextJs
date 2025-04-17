@@ -42,15 +42,15 @@ export default function Header() {
     <div
       className={`bg-black ${
         isMenuOpen ? "bg-opacity-100" : "bg-opacity-75"
-      }  text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
+      } text-white w-full z-50 transition-all duration-300 fixed top-0 left-0 right-0
         ${
           pathName === "/auth" || pathName.includes("mangaReadingPage")
             ? "hidden"
             : ""
-        }
-        `}
+        }`}
     >
       <div className="container mx-auto px-4">
+        {/* Existing header content */}
         <div className="flex items-center justify-between h-16">
           {/* Site Name */}
           <Link
@@ -133,6 +133,72 @@ export default function Header() {
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle menu</span>
           </Button>
+        </div>
+
+        {/* Mobile menu */}
+        <div
+          className={`${
+            isMenuOpen ? "block" : "hidden"
+          } md:hidden pb-6 pt-2 space-y-4`}
+        >
+          <div className="flex items-center mb-4">
+            <Input
+              type="search"
+              placeholder="Search..."
+              className="w-full bg-white bg-opacity-20 border-none text-white placeholder-gray-300"
+            />
+            <Button size="icon" variant="ghost" className="ml-2">
+              <Search className="h-4 w-4" />
+              <span className="sr-only">Search</span>
+            </Button>
+          </div>
+
+          <nav className="flex flex-col space-y-2">
+            <Link href="/" className="hover:text-gray-300 py-2">
+              Home
+            </Link>
+            <Link href="/manga/one-piece" className="hover:text-gray-300 py-2">
+              Catalog
+            </Link>
+            <Link href="/profile" className="hover:text-gray-300 py-2">
+              News
+            </Link>
+            <Link href="/collections" className="hover:text-gray-300 py-2">
+              Collections
+            </Link>
+          </nav>
+
+          <div className="flex flex-col space-y-2 pt-4 border-t border-gray-700">
+            {!isLoggedIn ? (
+              <>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Link href={{ pathname: "/auth", query: { page: "signIn" } }}>
+                    Log In
+                  </Link>
+                </Button>
+                <Button className="w-full justify-start">
+                  <Link href={{ pathname: "/auth", query: { page: "signUp" } }}>
+                    Sign Up
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/mangaAdminPage" className="w-full">
+                  <Button variant="ghost" className="w-full justify-start">
+                    Admin
+                  </Button>
+                </Link>
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  className="w-full justify-start"
+                >
+                  Logout
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

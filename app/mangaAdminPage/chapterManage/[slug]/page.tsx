@@ -25,11 +25,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { CreatePagesModal } from "@/components/mangaAdminPage/modals/CreatePagesModal";
-
-// You'll need to create these components
 import { CreateChapterModal } from "@/components/mangaAdminPage/modals/CreateChapterModal";
 import { UpdateChapterModal } from "@/components/mangaAdminPage/modals/UpdateChapterModal";
 import { usePathname } from "next/navigation";
+import { useDataCache } from "@/contexts/DataCacheContext";
 
 interface Chapter {
   id: number;
@@ -56,10 +55,11 @@ export default function ChapterViewPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [sortField, setSortField] = useState<keyof Chapter>("id");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const { getCachedData, setCachedData } = useDataCache();
   const pathName = usePathname();
   const mangaId = Number(pathName.split("/").filter(Boolean).pop());
   const translatorMangaTeamId = "2";
-  //to do something with translators
+
   const deleteChapter = async (chapterId: string) => {
     try {
       await axiosInstance.delete(
@@ -69,6 +69,9 @@ export default function ChapterViewPage() {
           withCredentials: true,
         }
       );
+      // Invalidate cache after deletion
+      const cacheKey = `chapters-manga-${mangaId}-translator-${translatorMangaTeamId}`;
+      setCachedData(cacheKey, null);
       fetchChapters();
     } catch (error) {
       console.error("Error deleting chapter:", error);
@@ -77,6 +80,15 @@ export default function ChapterViewPage() {
 
   const fetchChapters = useCallback(async () => {
     try {
+      const cacheKey = `chapters-manga-${mangaId}-translator-${translatorMangaTeamId}`;
+      const cachedChapters = getCachedData(cacheKey);
+
+      if (cachedChapters) {
+        console.log("Using cached chapters data");
+        setChapters(cachedChapters);
+        return;
+      }
+
       const response = await axiosInstance.get<ChapterListResponse>(
         `/api/app/mangas/${mangaId}/translator-manga-teams/${translatorMangaTeamId}/chapters`,
         {
@@ -86,10 +98,12 @@ export default function ChapterViewPage() {
       );
       setChapters(response.data.value);
       console.log("chapters", response.data.value);
+      // Cache the chapters data
+      setCachedData(cacheKey, response.data.value);
     } catch (error) {
       console.error("Error fetching chapters:", error);
     }
-  }, []);
+  }, [mangaId, translatorMangaTeamId, getCachedData, setCachedData]);
 
   useEffect(() => {
     fetchChapters();

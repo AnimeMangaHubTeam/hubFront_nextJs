@@ -209,7 +209,7 @@ export function CreatePagesModal({
             Upload Manga Chapter
           </DialogTitle>
         </DialogHeader>
-        <form action={createPages} className="space-y-4">
+        <form action={createPages} className="space-y-4 max-h-[80vh] overflow-y-auto">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="mangaId" className="text-zinc-400">
@@ -270,11 +270,11 @@ export function CreatePagesModal({
           </div>
 
           <DndProvider backend={HTML5Backend}>
-            <div className="mt-4">
+            <div className="test mt-4">
               <Label className="text-zinc-400 block mb-2">
                 Page Order (Drag to reorder)
               </Label>
-              <div className="grid grid-cols-6 gap-2 p-4 bg-zinc-800 rounded-md border border-zinc-700">
+              <div className="grid grid-cols-6 gap-2 p-4 bg-zinc-800 rounded-md border border-zinc-700 max-h-72 overflow-y-auto">
                 {pages.map((page, index) => (
                   <DraggableImage
                     key={page.id}

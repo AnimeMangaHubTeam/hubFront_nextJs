@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
+import { Inter } from "next/font/google";
+import "@/app/globals.css";
 import Header from "@/components/header";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AuthInitializer from "@/components/auth/AuthInitializer";
+import { DataCacheProvider } from "@/contexts/DataCacheContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,6 +17,7 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -31,13 +34,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-stone-950`}
+        className={`${geistSans.variable} ${geistMono.variable} ${inter.className} antialiased bg-black text-white`}
       >
         <AuthProvider>
-        <AuthInitializer>
-          <Header />
-          {children}
-          </AuthInitializer>
+          <DataCacheProvider>
+            <AuthInitializer>
+              <Header />
+              {children}
+            </AuthInitializer>
+          </DataCacheProvider>
         </AuthProvider>
       </body>
     </html>
