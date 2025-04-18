@@ -254,7 +254,7 @@ export default function MangaReader() {
         <header className="flex items-center justify-between px-4 py-3 bg-zinc-900/50 sticky top-0 z-50">
           <div className="flex items-center gap-2">
             <Button
-              variant="ghost"
+              variant="ghost" 
               size="icon"
               onClick={() => setChaptersOpen(true)}
             >
@@ -359,7 +359,7 @@ export default function MangaReader() {
 
         {/* Settings Sheet */}
         <SettingsSheet
-          open={settingsOpen}
+          open={settingsOpen} 
           onOpenChange={setSettingsOpen}
           settings={settings}
           onSettingsChange={handleSettingsChange}

@@ -19,11 +19,11 @@ export function SettingsSheet({ open, onOpenChange, settings, onSettingsChange }
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] bg-zinc-900 text-white border-l border-zinc-800">
         <SheetHeader>
-          <SheetTitle className="text-white">Настройки читалки</SheetTitle>
+          <SheetTitle className="text-white">Reader settings</SheetTitle>
         </SheetHeader>
         <div className="space-y-6 mt-6">
           <div className="space-y-4">
-            <h3 className="text-sm font-medium">РЕЖИМ ЧТЕНИЯ</h3>
+            <h3 className="text-sm font-medium">Reading mode </h3>
             <div className="flex justify-between gap-4">
               <Button
                 variant={settings.readingMode === "vertical" ? "default" : "outline"}

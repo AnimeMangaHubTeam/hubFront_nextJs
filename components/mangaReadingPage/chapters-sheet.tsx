@@ -94,7 +94,11 @@ export function ChaptersSheet({
                       ? "secondary"
                       : "outline"
                   }
-                  className="w-full justify-start h-auto py-3 text-left"
+                  className={`w-full justify-start h-auto py-3 text-left ${
+                    currentChapter?.chapterId === chapter.chapterId
+                      ? "text-black"
+                      : "text-zinc-400"
+                  }`}
                   onClick={() => onChapterSelect(chapter)}
                 >
                   <div>
